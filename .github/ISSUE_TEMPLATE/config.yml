@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Security problem
+    url: https://github.com/Lecarvalho/pomegr-dev/blob/main/SECURITY.md
+    about: Report it to contact@pomegr.com, not in a public issue.
+  - name: Something you cannot share in public
+    url: https://github.com/Lecarvalho/pomegr-dev/blob/main/SUPPORT.md
+    about: Write to contact@pomegr.com.

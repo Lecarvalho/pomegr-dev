@@ -1,0 +1,48 @@
+name: Bug report
+description: Something in Pomegr does not work as it should.
+body:
+  - type: markdown
+    attributes:
+      value: >-
+        This issue is public. Never post prompts, responses, transcripts, credentials, file
+        paths, or repository names. Describe what you saw, or use invented values.
+  - type: input
+    id: version
+    attributes:
+      label: Pomegr version
+      description: The About page in Settings shows it.
+    validations:
+      required: true
+  - type: dropdown
+    id: build
+    attributes:
+      label: Build
+      options:
+        - Installed
+        - Portable
+    validations:
+      required: true
+  - type: input
+    id: windows
+    attributes:
+      label: Windows version
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: What did you do?
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: What did you expect?
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: What happened instead?
+    validations:
+      required: true

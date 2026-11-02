@@ -1,0 +1,19 @@
+name: Question
+description: Ask how something in Pomegr works.
+body:
+  - type: markdown
+    attributes:
+      value: >-
+        This issue is public. Never post prompts, responses, transcripts, credentials, file
+        paths, or repository names.
+  - type: input
+    id: version
+    attributes:
+      label: Pomegr version
+      description: The About page in Settings shows it.
+  - type: textarea
+    id: question
+    attributes:
+      label: What do you want to know?
+    validations:
+      required: true
