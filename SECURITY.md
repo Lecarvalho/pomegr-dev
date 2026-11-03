@@ -1,6 +1,6 @@
 # Report a security problem
 
-Write to [contact@pomegr.com](mailto:contact@pomegr.com). Do not open a public issue.
+Write to the [contact address](SUPPORT.md#contact). Do not open a public issue.
 
 Say which Pomegr version you use, what you did, and what happened. Do not send working
 credentials or the content of your sessions.

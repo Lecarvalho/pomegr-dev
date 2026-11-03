@@ -64,10 +64,6 @@ verified update is ready, select **Restart and install** there, or **Restart to
 update** at the bottom of the sidebar, when you are ready to restart. A failed
 check or download leaves the current app usable.
 
-Pomegr 0.9.0 and earlier cannot update to a newer release by themselves. Select
-**Download installer** on the [download page](https://pomegr.com/download) and
-install the new version by hand.
-
 Portable mode never checks for updates automatically. To update it:
 
 1. Quit Pomegr with **Quit Pomegr** in the tray menu.
@@ -77,3 +73,23 @@ Portable mode never checks for updates automatically. To update it:
    `PomegrData`.
 4. Open the new executable. Pomegr starts with your existing settings and
    observation state.
+
+## Upgrade from Pomegr 0.9.0 or earlier
+
+Pomegr 0.9.0 and earlier check an update location that Pomegr no longer uses, so
+they never update by themselves. In **Settings → About** they show
+**Couldn’t check for updates or finish the download.** and keep working as
+before. Install the new version by hand once. Pomegr keeps your settings, task
+boards, and saved observation state.
+
+1. Select **Download installer** on the
+   [download page](https://pomegr.com/download).
+2. Quit Pomegr with **Quit Pomegr** in the tray menu.
+3. Open the new installer. It replaces the old app for your Windows user, without
+   administrator credentials, and leaves your Pomegr data in place.
+4. Open **Pomegr** from the Windows Start menu if it does not open by itself.
+   **Settings → About** shows the new version.
+
+From then on, the installed app updates itself as
+[Keep Pomegr up to date](#keep-pomegr-up-to-date) describes. To upgrade an old
+portable copy, follow the portable steps above.

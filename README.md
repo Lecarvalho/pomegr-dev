@@ -19,7 +19,10 @@ Windows x64. Each release has two builds:
 | `Pomegr-Portable-<version>-x64.exe` | You want to run Pomegr from a folder. It does not update by itself |
 
 Releases start at version 0.10.0. Older versions are not published here. Pomegr 0.9.0 and
-earlier cannot update to these releases by themselves, so install the new version by hand.
+earlier cannot update to these releases by themselves, so install the new version by hand,
+over the old one. It keeps your settings, task boards, and saved observation state.
+[Upgrade from Pomegr 0.9.0 or earlier](https://pomegr.com/docs/get-started/install#upgrade-from-pomegr-090-or-earlier)
+gives the steps.
 
 The guide is at [pomegr.com/docs](https://pomegr.com/docs).
 
@@ -52,7 +55,7 @@ to install one. Plugins have no release of their own: they update from the `main
 
 ## Get help
 
-Read [SUPPORT.md](SUPPORT.md), or write to [contact@pomegr.com](mailto:contact@pomegr.com).
+Read [SUPPORT.md](SUPPORT.md). Its [Contact](SUPPORT.md#contact) section has the address.
 Report a security problem as [SECURITY.md](SECURITY.md) describes.
 
 [LEGAL.md](LEGAL.md) says which terms apply, and what the MIT license covers here.

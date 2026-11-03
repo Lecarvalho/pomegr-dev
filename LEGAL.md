@@ -1,7 +1,9 @@
 # Legal
 
-Each Pomegr release carries its own terms. Read the files attached to the release that you
-downloaded. The terms of one release do not change another.
+Each Pomegr release carries its own terms. They are not files in this repository: each
+[release](https://github.com/Lecarvalho/pomegr-dev/releases) attaches them next to its
+installer, from `v0.10.0`. Read the files attached to the release that you downloaded. The terms
+of one release do not change another. A copy also comes with the app: open Settings, then About.
 
 | File in a release | What it holds |
 | --- | --- |
