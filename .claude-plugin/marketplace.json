@@ -1,0 +1,20 @@
+{
+  "name": "pomegr",
+  "description": "Official Pomegr plugins for Claude Code",
+  "owner": {
+    "name": "Leandro Carvalho"
+  },
+  "plugins": [
+    {
+      "name": "pomegr",
+      "displayName": "Pomegr",
+      "source": "./plugins/claude-code",
+      "description": "Configure and report bounded, repository-specific coding-agent signals to Pomegr.",
+      "homepage": "https://github.com/Lecarvalho/pomegr-dev",
+      "repository": "https://github.com/Lecarvalho/pomegr-dev",
+      "license": "MIT",
+      "category": "development",
+      "keywords": ["observability", "coding-agents", "signals", "local-first"]
+    }
+  ]
+}

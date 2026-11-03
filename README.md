@@ -3,8 +3,9 @@
 Pomegr is a local-first observer for coding-agent sessions. It runs on your computer and
 shows what your Claude Code and Codex sessions are doing.
 
-This repository is where you download Pomegr and ask for help. It holds no Pomegr
-application source.
+This repository is where you download Pomegr, install its plugins, and ask for help. It
+holds no Pomegr application source. The one exception is the plugins, which are readable
+code under the MIT license.
 
 ## Download
 
@@ -40,11 +41,18 @@ DSNK Technologie Inc.
 - Source archives for the third-party components whose licenses ask for them.
 
 GitHub adds two "Source code" archives to every release by itself. They hold only the files
-of this repository, such as this page.
+of this repository: this page, the guide, and the plugins.
+
+## Plugins
+
+The Pomegr plugins for Claude Code and Codex install from this repository, with no GitHub
+account. [plugins/](plugins/) holds them, and [docs/public/](docs/public/) holds the guide.
+Follow [Reporting plugins](https://pomegr.com/docs/using-pomegr/reporting-plugins#install-the-plugin)
+to install one. Plugins have no release of their own: they update from the `main` branch.
 
 ## Get help
 
 Read [SUPPORT.md](SUPPORT.md), or write to [contact@pomegr.com](mailto:contact@pomegr.com).
 Report a security problem as [SECURITY.md](SECURITY.md) describes.
 
-[LEGAL.md](LEGAL.md) says which terms apply.
+[LEGAL.md](LEGAL.md) says which terms apply, and what the MIT license covers here.

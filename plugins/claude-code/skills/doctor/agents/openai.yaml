@@ -1,0 +1,4 @@
+interface:
+  display_name: "Pomegr Doctor"
+  short_description: "Check Pomegr reporting setup"
+  default_prompt: "Diagnose this repository's Pomegr policy and plugin connection."

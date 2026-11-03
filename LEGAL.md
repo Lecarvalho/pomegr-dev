@@ -15,3 +15,9 @@ Third-party components stay under their own licenses. Where a license asks for t
 component, the release attaches it.
 
 The pages in this repository are not licensed for reuse. You may link to them and quote them.
+
+The exception is the plugin files: `plugins/`, `.claude-plugin/marketplace.json`, and
+`.agents/plugins/marketplace.json`. Pomegr's own code in these files is under the MIT license.
+Each plugin folder has its `LICENSE` and its `THIRD_PARTY_NOTICES.md`, which lists the packages
+that its bundles hold. These files apply to any copy of the plugins, including GitHub's "Source
+code" archives. The MIT license gives no right to the Pomegr name or the icon in each plugin.

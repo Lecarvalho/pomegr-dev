@@ -1,0 +1,32 @@
+{
+  "name": "pomegr",
+  "version": "0.9.18",
+  "description": "Configure and report bounded coding-agent signals to the local Pomegr observer.",
+  "author": {
+    "name": "Leandro Carvalho",
+    "url": "https://github.com/Lecarvalho"
+  },
+  "homepage": "https://github.com/Lecarvalho/pomegr-dev",
+  "repository": "https://github.com/Lecarvalho/pomegr-dev",
+  "license": "MIT",
+  "keywords": ["observability", "coding-agents", "signals", "local-first"],
+  "skills": "./skills/",
+  "mcpServers": "./.mcp.json",
+  "interface": {
+    "displayName": "Pomegr",
+    "shortDescription": "Local coding-agent signals",
+    "longDescription": "Adds repository policy workflows, lifecycle loading, delegation guidance, and provider-neutral reporting tools that Pomegr reads from Codex transcripts. The plugin does not send transcript contents or credentials.",
+    "developerName": "Leandro Carvalho",
+    "category": "Productivity",
+    "capabilities": ["Signal reporting", "Repository policy", "Diagnostics"],
+    "websiteURL": "https://github.com/Lecarvalho/pomegr-dev",
+    "brandColor": "#A63C32",
+    "composerIcon": "./assets/icon.png",
+    "logo": "./assets/icon.png",
+    "defaultPrompt": [
+      "Initialize this repository's Pomegr reporting policy.",
+      "Diagnose this repository's Pomegr reporting setup.",
+      "Report this task's current project-specific Pomegr signal."
+    ]
+  }
+}

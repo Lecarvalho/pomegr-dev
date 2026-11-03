@@ -1,0 +1,163 @@
+{
+  "description": "Load a repository's bounded Pomegr reporting policy, supply applicable rows to declared subagents, report a delegated agent that finished without reporting, link a session that Pomegr started for a task to that task, return the session title that the agent asked for, and optionally check cached account-usage guardrails.",
+  "modules": ["./register.tsx"],
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "startup|resume|fork|clear|compact",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node",
+            "args": ["${CLAUDE_PLUGIN_ROOT}/scripts/policy.mjs", "hook"],
+            "timeout": 5
+          },
+          {
+            "type": "command",
+            "command": "node",
+            "args": ["${CLAUDE_PLUGIN_ROOT}/scripts/usage-guard.bundle.mjs", "--provider", "claude"],
+            "timeout": 5,
+            "additionalContextLimit": 1600
+          }
+        ]
+      },
+      {
+        "matcher": "startup|resume|fork",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node",
+            "args": ["${CLAUDE_PLUGIN_ROOT}/scripts/session-title.bundle.mjs"],
+            "timeout": 5
+          }
+        ]
+      },
+      {
+        "matcher": "startup",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node",
+            "args": ["${CLAUDE_PLUGIN_ROOT}/scripts/bind-task.bundle.mjs"],
+            "timeout": 5
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node",
+            "args": ["${CLAUDE_PLUGIN_ROOT}/scripts/usage-guard.bundle.mjs", "--provider", "claude"],
+            "timeout": 5,
+            "additionalContextLimit": 1600
+          },
+          {
+            "type": "command",
+            "command": "node",
+            "args": ["${CLAUDE_PLUGIN_ROOT}/scripts/session-title.bundle.mjs"],
+            "timeout": 5
+          }
+        ]
+      }
+    ],
+    "SubagentStart": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node",
+            "args": ["${CLAUDE_PLUGIN_ROOT}/scripts/policy.mjs", "subagent-start"],
+            "timeout": 5
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "mcp__plugin_pomegr_pomegr__rename_session|mcp__pomegr__rename_session",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node",
+            "args": ["${CLAUDE_PLUGIN_ROOT}/scripts/session-title.bundle.mjs"],
+            "timeout": 5
+          }
+        ]
+      },
+      {
+        "matcher": "^mcp__(plugin_pomegr_pomegr|pomegr)__(add_task|get_task|list_tasks|update_task|remove_task|assign_task|unassign_task|complete_task|report_review|block_task|get_feature|create_feature|update_feature|delete_feature)$",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node",
+            "args": ["${CLAUDE_PLUGIN_ROOT}/scripts/query-session.bundle.mjs"],
+            "timeout": 5
+          }
+        ]
+      },
+      {
+        "matcher": "^mcp__(plugin_pomegr_pomegr|pomegr)__(get_session_report|list_session_agents|get_agent_context|get_recent_failures)$",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node",
+            "args": ["${CLAUDE_PLUGIN_ROOT}/scripts/query-session.bundle.mjs"],
+            "timeout": 5
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node",
+            "args": ["${CLAUDE_PLUGIN_ROOT}/scripts/progress-reminder.bundle.mjs"],
+            "timeout": 5,
+            "additionalContextLimit": 800
+          },
+          {
+            "type": "command",
+            "command": "node",
+            "args": ["${CLAUDE_PLUGIN_ROOT}/scripts/usage-guard.bundle.mjs", "--provider", "claude"],
+            "timeout": 5,
+            "additionalContextLimit": 1600
+          }
+        ]
+      }
+    ],
+    "PostToolBatch": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node",
+            "args": ["${CLAUDE_PLUGIN_ROOT}/scripts/usage-guard.bundle.mjs", "--provider", "claude"],
+            "timeout": 5,
+            "additionalContextLimit": 1600
+          }
+        ]
+      }
+    ],
+    "SubagentStop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node",
+            "args": ["${CLAUDE_PLUGIN_ROOT}/scripts/policy.mjs", "subagent-stop"],
+            "timeout": 5
+          }
+        ]
+      }
+    ]
+  }
+}

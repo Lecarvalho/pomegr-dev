@@ -1,0 +1,15 @@
+{
+  "name": "pomegr",
+  "displayName": "Pomegr",
+  "version": "0.9.18",
+  "description": "Configure and report bounded, repository-specific coding-agent signals to the local Pomegr observer.",
+  "icon": "./assets/icon.png",
+  "types": "./types/index.d.ts",
+  "author": {
+    "name": "Leandro Carvalho"
+  },
+  "homepage": "https://github.com/Lecarvalho/pomegr-dev",
+  "repository": "https://github.com/Lecarvalho/pomegr-dev",
+  "license": "MIT",
+  "keywords": ["observability", "coding-agents", "signals", "local-first"]
+}
