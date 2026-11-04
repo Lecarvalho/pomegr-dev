@@ -86,7 +86,7 @@ compact anything. When it has recorded a compaction between two requests from
 the same agent, the chart draws a dashed line labeled **compaction** between
 them.
 
-![The Requests chart in Full breakdown for a Codex session's primary agent, with a legend that has no Cache write: cache-read bars of about 240K tokens up to a dashed line labeled compaction, then bars of about 40K.](../images/context-and-tokens/compaction-drop.jpg)
+![The Requests chart in Full breakdown for a Codex session's primary agent, with a legend that has no Cache write and ends with the note that Codex does not report cache writes: cache-read bars of about 240K tokens up to a dashed line labeled compaction, then bars of about 40K.](../images/context-and-tokens/compaction-drop.jpg)
 
 *A real recorded Codex session. Before the line, the primary agent's bars are
 tall and almost entirely cache read. After it they are much shorter, so that
@@ -111,4 +111,5 @@ recorded the compactions as automatic or manual.
   evidence that needs it (see [Cache reuse](cache-reuse.md)) for all Codex
   sessions, because Codex records lack reliable cache-write counts as of
   September 2026 ([upstream issue](https://github.com/openai/codex/issues/35300)).
-  Cache reads remain available.
+  Cache reads remain available. Pomegr says so beside the Requests legend:
+  "Codex does not report cache writes."

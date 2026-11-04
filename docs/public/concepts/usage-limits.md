@@ -13,41 +13,42 @@ run out, and does not show a bill.
 
 ## Read a window
 
-Open **Usage limits** in the sidebar. Each provider has a card with one panel per
-window: a label, the percentage used, a bar, the reset time, and the note
-"Provider-reported window".
+Open **Usage limits** in the sidebar. Each provider has a card with one ring per
+window: the percentage used in the middle, the window's name, how much is left,
+and the reset time. A ring is green below 80% used and coral from 80%.
 
-![The Usage limits page with a Claude Code card showing Current session 21%, All models 65%, and Fable 6%, and a Codex card showing one window at 76% with an amber bar.](../images/usage-limits/provider-windows.jpg)
+![The Usage limits page with a Claude Code card and a Codex card. Claude Code shows three rings: 5 hours at 21%, All models (Weekly) at 36%, and Fable only (Weekly) at 7%. Codex shows one coral ring: Weekly at 86%.](../images/usage-limits/provider-windows.jpg)
 
-*A real Pomegr installation on 2026-09-30. Claude Code reports three windows
-and Codex one. The Codex bar is amber because 76% is in the warning band.*
+*A real Pomegr installation on 2026-11-03. Claude Code reports three windows and
+Codex one. The Codex ring is coral because its use is above 80%.*
 
-- **Claude Code:** **Current session** is a five-hour window. **All models** and
-  **Fable** are seven-day windows; Fable appears when the provider reports it.
-  A window with nothing used and no reset time reads **Not started**. It starts
+- **Claude Code:** **5 hours** is the short window. **All models (Weekly)** and
+  **Fable only (Weekly)** are seven-day windows; Fable appears when the provider
+  reports it, and any other model's window reads the same way, such as **Opus only (Weekly)**. A
+  window with nothing used and no reset time reads **Not started**. It starts
   with your next use.
-- **Codex:** one panel per window the account reports, each with its own reset
-  time.
+- **Codex:** one ring per window the account reports, each with its own reset
+  time. A seven-day window reads **Weekly**, and a shorter one reads its length,
+  such as **5 hours**.
 
 The sidebar's **Usage limits** widget repeats the highest window for each
-provider that has a session created in the last seven days, such as "65% · 7
-days". **View** opens the page. Percentages fall into fixed bands: 0% to 74% is
-normal, 75% to 84% warning, and 85% to 100% critical. In the sidebar the figure
-turns amber, then red; on the page the bar turns amber from 75%.
+provider that has a session created in the last seven days. It shows the
+percentage used and the time left, such as "65% · 3d left", or **Not started**
+for a window with nothing used. **View** opens the page. Percentages fall into
+fixed bands: 0% to 74% is normal, 75% to 84% warning, and 85% to 100% critical.
+In the sidebar the figure turns amber, then red; on the page the ring turns coral from 80%.
 
 ## How fresh a reading is
 
-The time beside the provider name says how the reading arrived:
-
-- **Updated** means Pomegr read the account's usage from the provider. Codex shows it.
-- **Last observed** means the figures were observed by Claude Code on this computer.
-  Claude always shows it. Repeated identical values keep their original time.
+The head of each provider card says when Pomegr observed the figures, such as
+**Observed 4 minutes ago**. Repeated identical values keep their original time.
 
 Pomegr checks each provider at most every five minutes, shares one check across
 every open browser tab, and waits longer after a failed check. For Claude Code, the
 check is a background run of your own Claude Code. It starts no model turn and has
 no cost. When a check fails, the last good figures stay visible with their original
-time, and the header reads **Refresh delayed**, with a retry countdown. A Claude
+time. One quiet line under the rings says what failed, how old the figures are, and
+when Pomegr tries again. **Why this happens** opens the connection help. A Claude
 reading is also stale when a window has reset. A reading can lag activity elsewhere
 on your account.
 Historical sessions never show current limits.
@@ -97,8 +98,9 @@ access with only an API key does not supply these windows.
 ## If a window is missing
 
 A missing window is unavailable, not zero. If neither source has data, Claude
-usage shows as not available. A failed check opens **Usage
-connection help** automatically, even when older figures remain.
+usage shows as not available. A failed check adds a quiet line under the rings,
+even when older figures remain. Select **Why this happens** to open the
+connection help.
 
 - **Codex CLI required for usage limits:** install or update the native Codex CLI
   on the computer running Pomegr, run `codex login` and sign in with ChatGPT, then

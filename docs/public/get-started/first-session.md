@@ -64,13 +64,13 @@ what it does not prove.
 
 | What you see | What to do |
 | --- | --- |
-| **No sessions match** | Clear **Filter sessions** and select **All**. |
+| **No session matches** your search, **No session is live**, or **No sessions match** | Clear **Filter sessions** and select **All**. |
 | **No sessions observed** | Wait for discovery to finish. |
 | **No sessions observed** after discovery finishes | Select **Configure session sources** to check your provider folders. |
 | **Session catalog unavailable** or **Monitor offline** | Wait; Pomegr reconnects automatically. |
 | **Session catalog unavailable**, saying Pomegr is paused | Select **Resume live refresh** in the tray menu. |
 | **No recorded activity yet** | Continue in your coding tool. |
-| Missing account usage | Open **Usage limits** and follow **Usage connection help** if shown. |
+| Missing account usage | Open **Usage limits**. If a line says a check failed, select **Why this happens**. |
 
 If an unavailable message persists in the desktop app, select **Quit Pomegr** in
 the tray menu, then reopen Pomegr; closing the window may only hide it to the

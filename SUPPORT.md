@@ -17,5 +17,4 @@ paths, or repository names. Describe what you saw, or draw it with invented valu
 
 ## Contact
 
-Write to [contact@pomegr.com](mailto:contact@pomegr.com). This is the one place that shows the
-address; every other Pomegr page links here.
+Write to [contact@pomegr.com](mailto:contact@pomegr.com).

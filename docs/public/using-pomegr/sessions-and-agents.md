@@ -12,8 +12,9 @@ not whether the work succeeded.
 ## Find a session
 
 1. Select **Sessions**. It starts on **Live** when any session is live, otherwise
-   on **All**. **Needs input** narrows the list to sessions waiting for you. A
-   count sits beside each filter.
+   on **All**. **Needs you** narrows the list to sessions waiting for you. The
+   header counts the **live** sessions, the sessions that **need you**, and the
+   sessions **in all**.
 2. Type in **Filter sessions** to match a session title, project, or coding tool.
    Some links open the list already filtered to one repository and add a
    **Repository** chip; select its close button to clear it.
@@ -24,33 +25,39 @@ not whether the work succeeded.
    to collapse it. **Feature** shows one group per feature, with the sessions
    Pomegr started for that feature's tasks; other sessions are not listed.
    **Show all** in a feature group adds a **Feature** chip. Pomegr remembers the
-   choice in this browser.
-4. Read a row, then select its title to open the session. A list shows 25 rows
-   per page; use **Previous** and **Next**.
-5. Read the **Task** column to see the task a session was started for: its ID,
-   and its feature. Select the ID to open that repository's task board.
-   A dash means you started the session yourself. A chip appears only for an
-   outcome the session cannot show: **Needs review**, **Stalled**, or **Done**.
-   The column and feature details are shown in the desktop app and in a browser
+   choice in this browser. On a phone **Group by** is a menu at the end of the
+   row with **All**, **Live**, and **Needs you**.
+4. Read a row, then select it to open the session. A list shows 10 rows
+   per page. When more sessions match, **Previous** and **Next** appear under the
+   list. A day heading that goes on over a page break says **continued**.
+5. Read the task of a session to see what it was started for. Its ID is on the line
+   under the title, with its feature. Select the ID to open that repository's task board.
+   A session you started yourself shows no task. A tag after the title appears only for
+   an outcome the session cannot show: **In review**, **Stalled**, or **Done**.
+   The task and its tag are shown in the desktop app and in a browser
    on the same computer, not on another device. A session started for a task also
    has a **Task** tab; see [Tasks](tasks-sessions.md#see-a-task-from-sessions).
 
-![The Sessions list in dark theme, filtered to the Pomegr project and the text Claude Code with All selected, showing four Claude Code sessions with their State, Last activity, Agents, and Context columns; one is In progress with 2/25 agents.](../images/sessions-and-agents/sessions-list.jpg)
+![The Sessions list in dark theme, filtered by the text Aril, with two rows. The first row has a ring dot, a full green progress bar at 100%, and 504.9K context. The second row has a green live dot, two green and six grey agent squares followed by +41, a 55% progress bar, and 19.6M context.](../images/sessions-and-agents/sessions-list.jpg)
 
-*Real Claude Code development sessions in the Pomegr project, captured on
-2026-09-30 and cropped to the first columns. One session was In progress at that
-moment.*
+*Real Claude Code development sessions in the Pomegr project, captured on 2026-11-03 and cropped to the page header, the filters, and two rows. The lower session was live at that moment, with 2 of its 49 agents working.*
 
-| Column | What it shows |
+Each row shows seven things, from left to right. On a narrow screen a row becomes a
+card with the same things.
+
+| Part of a row | What it shows |
 | --- | --- |
-| **State** | The session state, as described below. |
-| **Last activity** | The latest recorded activity. A dashed marker means it is current; a solid marker means it is the last one recorded. |
-| **Agents** | Active agents over total agents, such as `2/25`. |
-| **Context** | The sum of each agent's latest [context](../concepts/context-and-tokens.md) snapshot, in thousands of tokens. It is not spend. |
-| **Progress** | The percentage the agent reported through the optional [Pomegr plugin](reporting-plugins.md). |
+| **Dot** | A pulsing dot means the session is live. An amber dot means it waits for you. A ring means it is not live. The [state word](#read-a-sessions-state) is the dot's text for screen readers. |
+| **Title** | The session title, with the repository, the coding tool, the task, and the latest recorded activity under it. |
+| **Agents** | One square for each agent, up to eight and then a `+10` for the rest, and under them words such as `1 of 3 working`. Green squares work. Grey squares do not. Hollow squares with `activity unknown` mean Pomegr does not know yet how many agents work. A session that is not live shows `3 agents` in a muted tone. |
+| **Progress** | The percentage the agent reported through the optional [Pomegr plugin](reporting-plugins.md), the confidence the agent gave, and a bar. The bar is green at 100%. **No estimate** means the agent reported none, and then there is no bar. |
+| **Context** | One number: the sum of each agent's latest [context](../concepts/context-and-tokens.md) snapshot, such as `846K across 4 agents` or `8.2M across 18 agents`. It has no bar and no limit. It is not spend. |
 | **Updated** | When Pomegr last recorded activity. A small clock appears beside it only while the primary agent's cache lifetime is nearing its threshold or has elapsed, and opens the cache timer; see [Cache reuse](../concepts/cache-reuse.md). |
+| **Arrow** | A decoration. The whole row opens the session. |
 
-A dash means the value is unavailable, not zero.
+The squares show how many agents work, not what each agent does. Pomegr receives
+the count of agents and the count that work. A dash means the value is unavailable,
+not zero.
 
 ## Read a session's state
 
@@ -63,6 +70,13 @@ A dash means the value is unavailable, not zero.
 | **Stopped** | Codex only: the latest recorded turn failed or was interrupted. |
 | **Closed** | Claude Code only: Pomegr confirmed that the session's Claude Code process ended. It reports the closure, not that the work succeeded. After Pomegr restarts, the session can show **Idle** again until Pomegr sees new closure evidence. |
 | **Unknown** | Pomegr lacks usable evidence. It never turns silence into completion. |
+
+For a few seconds after Pomegr starts, a session shows a neutral dot and **Checking**
+instead of a state, and the **live** and **needs you** counts show a dash. Pomegr is
+looking at each coding tool, and it does not call a session idle before it knows. If a
+tool cannot be checked within 30 seconds, its sessions show their last recorded state with
+the title “Not confirmed since Pomegr started”, and the counts stop waiting. If the check
+completes later, the sessions take their real state.
 
 An **Open** session moves from **Live** to **All** five minutes after its last
 recorded activity, and keeps its state. A session that Pomegr no longer sees as

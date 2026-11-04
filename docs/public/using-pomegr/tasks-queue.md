@@ -42,12 +42,12 @@ The **Ready** column shows what runs when. It reads top to bottom, and a frame m
 
 ## See why a queued task has not started
 
-Each waiting card in **Ready** says where it stands and what it waits for. A card past
-the first place opens with its place, such as "5th in queue". Then "Waiting:" lists
-each reason. Open the card to read the same reasons in full under **Queue**, with every
-task that starts first.
+The queue strip says what happens next, such as "Next: T-25, after T-21 is done". A
+card that waits for another task says "After T-21". To read every reason a card has not
+started, open it and read **Queue**: its place in the start order, one line for each
+reason, and every task that starts first.
 
-| The card says | What it means |
+| The task window says | What it means |
 | --- | --- |
 | earlier tasks start first (T-3, …) | Those cards are above it in **Ready**, so they start first. The cards of its own parallel group are not listed: they start with it. |
 | runs after T-13, which is not done | It [runs after](tasks-order.md#runs-after) that task. It starts once that task is **Done** or deleted. |

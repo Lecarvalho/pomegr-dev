@@ -15,12 +15,12 @@ To get started, [install Pomegr](install.md) on your Windows computer, then
 ## A session at a glance
 
 Here is Pomegr showing a recorded Claude Code session: one primary agent and
-eight subagents.
+seven subagents.
 
-![A recorded session's Overview tab in dark theme, with 9 agents, 2.3M all-agent context, 2h 10m recorded wall time, 594 calls, and a 100% agent estimate.](../images/introduction/session-overview.jpg)
+![A recorded session's Overview tab in dark theme: the session header, a summary strip with 8 agents, 1.7M all-agent context, 3h 28m recorded wall time, 514 calls, and a 100% agent estimate, then the Right now, Requests, Events, Repository, Progress, Tool calls by kind, and Cost panels.](../images/introduction/session-overview.jpg)
 
-*A real recorded development session from the Pomegr project, with its actual
-activity and numbers.*
+*A real recorded development session from the Pomegr project (task T-94),
+captured on 2026-11-03 from Pomegr 0.10.0, with its actual activity and numbers.*
 
 A session opens with a header, a summary strip that stays in view, and tabs.
 Read the strip from left to right:
@@ -39,7 +39,9 @@ Read the strip from left to right:
 
 The **Overview** tab summarizes the session; **Agents**, **Activities**,
 **Repository**, and **Signals** go deeper. **Resources** appears when Pomegr has
-resource data for the session, and **Details** lists further session facts.
+resource data for the session, and **Details** lists further session facts. The
+desktop app also shows **Terminal**, and a session that Pomegr started for a task
+adds **Task**.
 
 ## Meet the agents
 
@@ -65,7 +67,8 @@ action.
 
 ![The Requests chart in dark Full breakdown mode with request 300 selected: one lane per subagent, each with its own maximum, and a legend for uncached input, cache write, cache read, output, and compaction.](../images/introduction/requests-chart.jpg)
 
-*The same session's Requests chart around request 300.*
+*A Requests chart around request 300 from an earlier recorded session of the
+Pomegr project, captured on 2026-09-30.*
 
 ## Follow more than one session
 
@@ -78,9 +81,9 @@ Dark mode is the default. Switch to the light theme from the **Local profile**
 menu, or set **Color theme** under **Settings → Appearance**. See
 [Settings](../using-pomegr/settings.md) for the other options.
 
-![The same session's header, summary strip, and tabs in Pomegr's light theme.](../images/introduction/light-mode.jpg)
+![The header, summary strip, and tabs of the session above, in Pomegr's light theme.](../images/introduction/light-mode.jpg)
 
-*The same session in the light theme.*
+*The session of the first image, in the light theme.*
 
 Keep working in your coding tool. Pomegr observes existing session records without
 controlling your agents or putting prompts, responses, and credentials in the
@@ -94,20 +97,19 @@ when you select **Start session**, or when you turn on the queue. The queue star
 cards from the top of **Ready**, one after another. Cards in a **Parallel** group
 start together, each in a Git worktree of its own. See [Tasks](../using-pomegr/tasks.md).
 
+![The Pomegr repository's task board in dark theme, with all five lanes. The Queue switch is off. Feature chips filter the 233 tasks. Backlog holds 57 cards, including a Parallel group of two. Ready holds 3 cards that start from the top. In progress is empty. Review holds 2 cards with Session links. Done lists its 7 newest of 171 tasks.](../images/introduction/tasks-board.jpg)
+
+*A real board from the Pomegr project, captured on 2026-11-03 with the queue off.*
+
 **Aril** is the chat panel on the right side of the window. It reads the board, the
 repository's files, and what Pomegr observed, then proposes changes, such as tasks
 cut from a feature. Nothing changes until you select **Apply changes**, and Aril
-starts a session or turns the queue on or off only through a proposal you apply. The
-exception is a time-bound [grant](../using-pomegr/tasks.md#aril-grants) that only you
-start. See [Agent chat](../using-pomegr/agent-chat.md).
-
-![The Pomegr repository's task board in dark theme, with the queue on, cards in Backlog, In progress, and Done, and the Aril panel proposing one new task with Apply changes and Dismiss.](../images/introduction/tasks-board.jpg)
-
-*A real board from the Pomegr project, with Aril proposing a task.*
+starts a session or turns the queue on or off only through a proposal you apply. See
+[Agent chat](../using-pomegr/agent-chat.md).
 
 After a start, Pomegr only observes the session: it never attaches to, answers, or
-approves anything in a running session, and it ends the session only when its task
-is done. Sessions always run on the
+approves anything in a running session. It ends a session only when its task is done,
+or when the session has stayed idle for two minutes and its task is in Review. Sessions always run on the
 computer running Pomegr. A paired phone can change tasks and apply Aril's proposals,
 but Aril's start proposals are applied in the desktop app. Observing sessions works
 the same whether or not you use tasks.

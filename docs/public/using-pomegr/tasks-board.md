@@ -17,9 +17,33 @@ Select **Tasks** in the sidebar.
   agent, newest first. A row opens that task's board.
 - **Boards** shows each repository with its queue, the number of tasks in each column,
   and when a task last changed. Select a repository's name to open its board.
-- On a board, **Tasks** above the heading returns to the home. The **Repository** menu
-  beside the heading switches repository.
+- On a board, the heading is the repository's name. **Tasks** above it returns to the
+  home, and the small arrow beside the heading switches repository.
 - A repository's own **Tasks** tab links to the same board.
+
+## Read a board
+
+- **The queue strip** is the first block. Its switch turns the queue on and off, its
+  word says whether the queue is on, off, paused, or blocked, and one line says what
+  happens next, such as "Next: T-25, after T-21 is done". **Queue settings** opens the
+  start gates and the schedule. The strip shows no usage figure.
+- **Feature chips** show **All** and the three features with the most open tasks, each
+  with its number of tasks. **More** lists the other features with their numbers.
+  Select a chip, or a feature in **More**, to show only that feature's tasks, and
+  **All** to show every task. On a phone the row is **All**, the selected feature, and
+  **More**.
+- **Ready** starts from the top, and its header says so. **In progress** says what
+  starts next when nothing runs, or how to start the queue.
+- **Done** is a short list of finished tasks, newest first, with how long ago each
+  changed. Select **Show all** to see the rest.
+- A card shows its ID and feature, a title, and one line with the model and effort that
+  ran, or the planned ones before it ran. A **Session** link ends that line once the
+  task has a session. A card that waits for another task says "After T-13". The card
+  never shows a difference between the planned and the observed model: the task window
+  does.
+- **Log**, **Scorecard**, and **Promote issues** are at the top right, where they apply.
+- On a phone the lanes are tabs, **Backlog**, **Ready**, **Running**, **Review**, and
+  **Done**, each with its count. The board opens on **Review** when it holds a task.
 
 You cannot add, rename, reorder, or delete a column. Moving a card to **Done** also accepts its task.
 
@@ -27,7 +51,7 @@ You cannot add, rename, reorder, or delete a column. Moving a card to **Done** a
 
 - **Move a card.** Drag it to another column, or between two cards. A line shows where
   the card will land, and a long column scrolls while you hold the card near its top or
-  bottom. Dragging is off while a feature filter is on.
+  bottom. Dragging is off while a feature chip is selected.
 - **Move a card from the keyboard.** Focus the card to reveal four buttons, such as
   **Move T-3 up** and **Move T-3 to the next column** (T-3 is an example). Arrow keys
   move between the buttons.
@@ -39,8 +63,8 @@ Pomegr moves a card to another column when its task changes state:
 | When | The card moves to |
 | --- | --- |
 | The task's session starts and links to it | **In progress** |
-| The task becomes **Needs review**: the agent reported it complete | **Review** |
-| The task becomes **Done**: you chose **Mark done**, or an [Aril grant](tasks.md#aril-grants) you allowed to marked it | **Done** |
+| The task becomes **In review**: the agent reported it complete | **Review** |
+| The task becomes **Done**: you chose **Mark done** | **Done** |
 
 - **Blocked by agent** and **Stalled** do not move a card. It stays where it is,
   normally **In progress**, and holds the queue. A card in **Review** does not hold the
@@ -77,7 +101,7 @@ lists its tasks before the usual destinations.
   column, the chip, and `#` with an issue number, such as `#133`. Every word you type
   must match.
 - **Choosing a task.** The desktop app opens the task. A same-computer browser shows the
-  card on the **Board** and clears a feature filter that would hide it.
+  card on the **Board** and selects **All** if a feature chip would hide it.
 - The search reads nothing new: it uses the board already on screen, and what you type
   is not stored.
 
@@ -88,10 +112,10 @@ lists its tasks before the usual destinations.
 | **Not queued** | On the board, not in the queue. | Creating the task, or **Remove from queue**. |
 | **Queued** | Waiting for its turn and the start gates. The next one reads **Queued · next**, and **Next** on its card. | **Add to queue**, or **Requeue task**. |
 | **Scheduled** | Queued with its own start time. | Setting **Start at** on the task. |
-| **Needs review** | The agent reported complete. The task window shows each checked condition's result and the agent's attention line, if it gave one. | Pomegr, when it verifies the report. |
+| **In review** | The agent reported complete. The task window shows each checked condition's result and the agent's attention line, if it gave one. | Pomegr, when it verifies the report. |
 | **Stalled** | The session ended without a report. | Pomegr, once the session's end is established. It leaves Stalled when that session reports or works again. |
-| **Blocked by agent** | The latest report says the agent cannot continue. A later completion changes the task to **Needs review**. | The agent sets the block; you resolve it. |
-| **Done** | You accepted the task. An agent's report never sets it. | You, with **Mark done** or a move to **Done**, or an [Aril grant](tasks.md#aril-grants) with **Mark done when acceptance passes** after the task's acceptance passed. |
+| **Blocked by agent** | The latest report says the agent cannot continue. A later completion changes the task to **In review**. | The agent sets the block; you resolve it. |
+| **Done** | You accepted the task. An agent's report never sets it. | You, with **Mark done** or a move to **Done**. |
 
 A task has no **Running** state. Once a session is linked to a task that has no outcome
 yet, its state is that session's observed state, such as **In progress** (see
@@ -115,7 +139,7 @@ linked.
   not already say it. A **Queued** card in **Ready** has no label.
 - **Next.** The card that starts next in **Ready** reads **Next**.
 - **The border.** A green border means the session works. An amber border means the task
-  needs you: **Needs review**, **Stalled**, **Blocked by agent**, or a session that
+  needs you: **In review**, **Stalled**, **Blocked by agent**, or a session that
   needs input.
 
 ## Board limits

@@ -96,7 +96,8 @@ As of September 2026, Codex records lack reliable Cache write counts
 cannot mark a **Possible full refill** there. Instead, when reuse collapses
 between adjacent requests from the same agent and model, with no cache write
 recorded, it marks **Possible refill** and calls it an inference: "No positive
-cache-write evidence, so a refill and its cause cannot be confirmed." If the
+cache-write evidence, so a refill and its cause cannot be confirmed." The
+Requests legend also says "Codex does not report cache writes." If the
 recorded model changed between the requests, the marker reads **Cache reuse
 dropped across a model change** and makes no refill, expiry, or cause claim.
 

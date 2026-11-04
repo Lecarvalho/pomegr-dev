@@ -20,7 +20,7 @@ network you trust. No cloud account or phone app is needed.
 
 ## Pair a phone
 
-1. On the computer, open **Settings → Phone access**. If more than one private
+1. On the computer, open **Settings → Phone**. If more than one private
    network is available, choose one under **Private network**.
 2. Select **Enable phone access**. The panel reads **Sharing started** and shows
    the address the phone will use. Windows may ask to allow Pomegr on private
@@ -37,8 +37,8 @@ network you trust. No cloud account or phone app is needed.
 A paired phone shows the same normalized dashboard, read-only: Home, Sessions,
 Repositories, Models & delegation, Usage limits, and Settings, where
 **Providers** and **Storage** are view-only. It cannot copy a transcript path,
-use desktop controls, sign in to a coding tool, or change sharing. The **Phone
-access** tab exists only in the desktop app.
+use desktop controls, sign in to a coding tool, or change sharing. The **Phone**
+section exists only in the desktop app.
 
 A paired phone can also use the [agent chat](agent-chat.md) while Aril is On. There you can apply the
 board changes that Aril proposes, and a proposal to turn the queue on or off. While Aril is Off the phone shows no chat and no message box on Home.

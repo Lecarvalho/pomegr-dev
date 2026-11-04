@@ -6,10 +6,11 @@ description: "Turn on local usage so Pomegr can show Claude Code's five-hour and
 # Claude Code local usage
 
 Local usage lets Pomegr read the usage that Claude Code itself reports in its
-status line, so **Usage limits** can show Claude Code's five-hour and seven-day
-windows when Pomegr's normal usage check through Claude Code gives no reading. It also records Claude Code's
-session cost estimate for the Overview **Cost** panel. Figures are Claude Code's
-reports for your whole account, so they can lag activity elsewhere on it.
+status line, so **Usage limits** can show Claude Code's **5 hours** and **All models
+(Weekly)** windows when Pomegr's normal usage check through Claude Code gives no
+reading. It also records Claude Code's session cost estimate for the Overview
+**Cost** panel. Figures are Claude Code's reports for your whole account, so they
+can lag activity elsewhere on it.
 
 ## Before you start
 
@@ -27,14 +28,16 @@ reports for your whole account, so they can lag activity elsewhere on it.
 The installed Windows app offers the setup. The portable app does not, because
 its runtime path is temporary.
 
-1. Open **Usage limits**. When Claude Code usage is unavailable, **Usage
-   connection help** opens under the Claude Code card.
+1. Open **Usage limits**. When Claude Code usage is unavailable, a quiet line
+   appears under the Claude Code card. Select **Why this happens** to open the
+   connection help.
 2. Select **Enable local usage**.
 3. Review the confirmation dialog, which says Pomegr will update the Claude Code
    profile's status-line setting, and confirm.
 
 Pomegr reports "Local usage feed enabled." Figures appear after Claude Code
-reports usage in a supported session, labeled **Last observed**. Setup keeps your
+reports usage in a supported session. The head of the Claude Code card then reads
+**Observed** and the age, such as **Observed 4 minutes ago**. Setup keeps your
 existing status-line command and its other settings, runs no sign-in or model
 request, and needs no separate Node.js installation. If Claude Code's settings
 are malformed or change during setup, Pomegr refuses and leaves them as they
@@ -80,7 +83,8 @@ accounts or profiles.
 
 Repeated identical values keep their original time, so an unchanged reading does
 not look newer. Local usage has no Fable window. When it is newer than the last usage check,
-Pomegr shows the check's Fable reading apart, labeled **Last reading**, as described in [Usage limits](../concepts/usage-limits.md#provider-differences).
+Pomegr shows the check's Fable reading apart, in a **Fable only (Weekly)** ring whose
+second line reads **Last reading**, as described in [Usage limits](../concepts/usage-limits.md#provider-differences).
 To stop capture, restore your previous status-line command in that profile's
 Claude Code settings.
 

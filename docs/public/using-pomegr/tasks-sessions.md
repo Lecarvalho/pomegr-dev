@@ -74,13 +74,13 @@ one. The card state still follows only the session that Pomegr started.
 On a same-computer browser or the desktop app, tasks show up beside the sessions
 started for them. Other devices see none of it.
 
-- **Sessions list.** The **Task** column shows the task number, the number of its
-  [GitHub issue](github-issues.md) if it has one, its feature, and a chip only for
-  **Needs review**, **Stalled**, or **Done**. **Group by** **Feature** and the
+- **Sessions list.** The line under a session title shows the task number, the number of
+  its [GitHub issue](github-issues.md) if it has one, and its feature. A tag after the
+  title appears only for **In review**, **Stalled**, or **Done**. **Group by** **Feature** and the
   **Feature** chip filter are described in
   [Sessions and agents](sessions-and-agents.md#find-a-session). A session that is
-  assigned to tasks shows them after the word **Assigned**. A dash means that the
-  session has no task.
+  assigned to tasks shows them after the word **Assigned**. A session with no
+  task shows none of this.
 - **Session view.** The header shows the task and its feature. The task ID opens the
   **Task** tab, the last tab. It is read-only. It shows the task text, the planned and
   observed model, the definition of done with each check's result, and the feature's

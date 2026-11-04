@@ -12,8 +12,12 @@ does not show that the work never happened or did not finish.
 
 ## An empty Sessions list
 
-The list reads **No sessions match** when a search or filter matches none, and
-**No sessions observed** when Pomegr has found no sessions.
+A quiet dashed line takes the place of the rows. It reads **No session matches**
+with your search, **No session is live** or **No session needs you** under those
+filters, **No sessions match** for another filter or scope, and **No sessions
+observed** when Pomegr has found no sessions. Under **Group by** **Feature**, it says
+that no live session, or no session that needs you, was started for a feature's
+task, because that grouping lists only those sessions.
 
 ### No sessions match
 
@@ -23,7 +27,7 @@ filters.
 1. Clear **Filter sessions**, and select the close button on a **Repository:**
    or **Provider:** chip if one is shown. **View sessions** on a repository opens
    the list with the **Repository:** chip.
-2. Select **All**. **Live** and **Needs input** list only sessions in that state.
+2. Select **All**. **Live** and **Needs you** list only sessions in that state.
 
 Rows return, and "0 matches" changes to a count of the sessions listed.
 

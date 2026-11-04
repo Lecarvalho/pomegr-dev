@@ -17,6 +17,7 @@ report, not proof about your account or a session.
 | Gray placeholders, "Loading session…", or "Loading agent evidence…" | Pomegr is preparing the first results. |
 | "—" in a summary cell | The value is not ready or has no evidence. Pomegr shows a dash, never an invented zero. |
 | **No recorded activity yet** | Pomegr has the session but nothing recorded to show. |
+| **Evidence unavailable** in the Sessions list, or "Pomegr could not read this session's evidence." on the session page | Pomegr found the session, but its recorded data did not pass Pomegr's checks. Pomegr shows no error and keeps any evidence it read earlier. It tries again when the session changes. |
 | "Agent evidence is unavailable for this session." | Pomegr confirmed it cannot produce that evidence. |
 | "Signal evidence is temporarily unavailable." | The latest request failed, and Pomegr retries. |
 | "Activity history is unavailable while this session view is paused." | Refresh is paused; see [Connection problems](connection-problems.md#pomegr-is-paused). |
@@ -35,7 +36,8 @@ committed. Check the time beside a value before you treat it as current.
      and Codex has no session estimate. See
      [Signals and estimates](../concepts/signals-and-estimates.md).
    - **Cache write** and refill markers are missing for Codex, whose records do
-     not give reliable cache-write counts as of September 2026. See
+     not give reliable cache-write counts as of September 2026. Pomegr says
+     "Codex does not report cache writes." where the figure is missing. See
      [Cache reuse](../concepts/cache-reuse.md).
    - Usage windows have their own steps in
      [Usage limits](../concepts/usage-limits.md#if-a-window-is-missing).

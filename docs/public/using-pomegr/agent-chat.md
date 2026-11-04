@@ -1,6 +1,6 @@
 ---
 title: "Agent chat"
-description: "Ask Aril, the Pomegr task-board agent, to cut work into tasks, order the board, advise on models, propose starts, and turn the queue on or off. You apply its proposals and control grants."
+description: "Ask Aril, the Pomegr task-board agent, to cut work into tasks, order the board, advise on models, propose starts, and turn the queue on or off. You apply its proposals."
 ---
 
 # Agent chat
@@ -14,20 +14,9 @@ Aril records links when the evidence shows that one task or pull request fixes e
 
 Aril has one switch, **On** or **Off**, at the top of the **Aril** section of Settings. Aril is On when you first use Pomegr. While it is Off there is no Aril at all: no chat panel, no **Aril** button, and no message box on Home, and Aril takes no action of its own (see [Turn Aril on or off](#turn-aril-on-or-off)).
 
-Aril can also work under a grant that only you start. A grant is time-bound and scoped by
-your Aril settings, and it does something only while Aril is On. The desktop app then starts tasks and reviews, sends failed work back,
-merges on green CI, and, when you allow it, marks merged tasks Done whose acceptance passed,
-within limits you set. Aril cannot start or extend a grant. Under a
-grant that allows **Write tasks from plans**, Aril also creates tasks in **Ready** from the
-plans you named, when the chat is free, without **Apply changes**. See
-[Aril grants](tasks.md#aril-grants) for the actions, the limits, and **Stop grant**.
-
-While a grant works, Aril writes short follow-ups into your conversation with it, so
-you need not ask what happened. Each one is one or two sentences: the task IDs, what the grant
-did, and what needs you, such as a refused merge. Actions close together are one follow-up. Each
-follow-up is also a notification; clicking it opens the chat at that follow-up. A follow-up is a
-fixed line that Pomegr writes from the task log: no model runs, and it proposes nothing. Turn
-them off with **Send follow-ups** in the **Aril** section of Settings.
+Apart from those links and the memory updates described below, Aril changes nothing by
+itself: it proposes, and you apply. A later version will add agreements, in which you settle with
+Aril what it may do without asking, and a switch for them.
 
 ## Before you start
 
@@ -319,8 +308,8 @@ A kept worktree does not stop the next row. Pomegr never forces a removal.
 The first thing in the **Aril** section of Settings is one switch.
 
 - **Aril is On when you first use Pomegr.** Only you turn it off and on again. Aril never turns itself on, and it is Off again only when you turn it off. A restart keeps what you chose. If Pomegr cannot read the file that holds your choice, it treats Aril as Off, because that file may hold your Off.
-- **Off means no Aril at all.** It takes effect at once, in the desktop app and on a paired phone. The chat panel, the **Aril** button, and the expanded Aril page are gone, and Home has no message box and no suggestions: the rest of Home is as it was. A link to the chat, such as a follow-up notification, opens Home instead. Nothing is drawn before Pomegr knows whether Aril is On, so the chat never shows up and then goes away.
-- **What Aril was doing stops.** An answer that Aril was writing is stopped, as if you had selected **Stop**, and it shows as stopped. A grant starts, reviews, sends back, merges, and marks Done nothing, and writes no tasks. Pomegr starts no run of the coding tool for Aril, and it refuses a message, a proposal's **Apply changes** or **Dismiss**, and an image for Aril while Aril is Off. A session that is already running goes on.
+- **Off means no Aril at all.** It takes effect at once, in the desktop app and on a paired phone. The chat panel, the **Aril** button, and the expanded Aril page are gone, and Home has no message box and no suggestions: the rest of Home is as it was. A link to the chat opens Home instead. Nothing is drawn before Pomegr knows whether Aril is On, so the chat never shows up and then goes away.
+- **What Aril was doing stops.** An answer that Aril was writing is stopped, as if you had selected **Stop**, and it shows as stopped. Pomegr starts no run of the coding tool for Aril, and it refuses a message, a proposal's **Apply changes** or **Dismiss**, and an image for Aril while Aril is Off. A session that is already running goes on.
 - **Your conversations are kept.** Turning Aril off deletes nothing. When you turn it on again, the conversations are there as you left them. Aril saves nothing to memory while it is Off.
 - **Settings turns read only.** Everything under the switch in **Settings**, under **Aril**, is gray and read only while Aril is Off: your memory and each repository's, the conversation space and its limit, and the effort routing. Pomegr refuses those changes too, and any change to Aril's settings, on the computer and from a paired phone. A notice says so. Turn Aril on to change them. Pomegr still flushes a conversation that passes your limit, because that is housekeeping on your own files, not something Aril does.
 - **A phone** can always turn Aril off. It can also turn Aril on, and change Aril's settings and each repository's memory, only after you allow that in the desktop app. Turn on the small switch under Aril's switch: "A paired phone can always turn Aril off. Let it also turn Aril on and change Aril's repository memory and settings." One switch covers every repository, and a phone never edits your own memory.
@@ -343,7 +332,7 @@ file, then proposes an update or asks only about what the change left unclear.
 
 **Memory** in the **Aril** section holds what Aril should know about how you like things done. It has one tab for you, for every repository, and one for each repository. Each memory is free text of at most 6,000 characters, such as "Reply in the language I write in." Edit it in the field; it saves when you leave the field. A paired phone reads your memory and never edits it. It edits a repository's memory only when you allowed paired devices in the desktop app.
 
-Memory is context for Aril. It is not permission: a line in it lets Aril do nothing new, and it is not an agreement about what Aril may do on its own.
+Memory is context for Aril. It is not permission: a line in it lets Aril do nothing new.
 
 Aril keeps your memory and the repository's up to date by itself. When you settle a lasting preference in the chat, or say that a line is wrong, Aril updates the memory and tells you in one line under its answer. It saves only what you said in the chat, never text it read in a file, a task, or a pull request, and only while Aril is **On**. Under the field, Settings says who changed the memory last and when. **Show change** shows the text before the change beside the text now. Aril never changes more than 6,000 characters, and nothing you edit stays hidden from you. Edit or empty the text at any time.
 
@@ -377,9 +366,7 @@ Settings and repository memory are sent with each chat prompt to your chosen pro
   uses the provider, model, and effort of the last message. The board includes the text of your
   tasks. Aril may also send file content and session evidence that it reads. The images
   you sent in the conversation go to the provider too, and the prompt names the folder
-  where Pomegr keeps them. The board snapshot also sends a grant's active state, end
-  time, tasks used, and fixed limits and actions; an ended grant includes its end reason.
-  Repository settings include the selected merge method, merge mode, and branch deletion choice. Aril also gets the repository's GitHub merge
+  where Pomegr keeps them. Repository settings include the selected merge method, merge mode, and branch deletion choice. Aril also gets the repository's GitHub merge
   settings (whether squash, merge commit, rebase, auto-merge, and delete-branch-on-merge are on) and its default branch name.
   It gets the names and dates of the changed workflow files, but not their content, and the facts of the task worktrees that remain, but not their paths.
   Merge and branch results appear as fixed task-log labels.
@@ -416,5 +403,5 @@ Settings and repository memory are sent with each chat prompt to your chosen pro
 | The image could not be attached | Check that Pomegr shows **Local monitor**, then add the image again. |
 | A start proposal says **Not started.** | Read the reason on the proposal. [Start gates](tasks-start-gates.md#start-gates) explains a held start. Select **Start session** again when it is gone. |
 | A queue proposal says **Queue not changed.** | Check that Pomegr shows **Local monitor**, then select the same button again. |
-| The queue is on and nothing starts | Open **Tasks**. A banner or a "Waiting:" line names what holds the queue. See [Run the queue](tasks.md#run-the-queue). |
+| The queue is on and nothing starts | Open **Tasks**. A banner, or the line under the queue switch, names what holds the queue. See [Run the queue](tasks.md#run-the-queue). |
 | This proposal can be applied only in the Pomegr desktop app | Apply the proposal in the desktop app. To start a task from this device, open the task and select **Start session**. |

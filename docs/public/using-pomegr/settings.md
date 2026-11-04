@@ -7,7 +7,7 @@ description: "Choose appearance, provider folders, storage limits, and display p
 
 **Settings** changes how Pomegr looks, which local folders it observes, and how
 long it keeps its own resource history. It never controls your coding agents;
-Pomegr stays read-only. Some tabs change only in the desktop app, and a browser
+Pomegr stays read-only. Some sections change only in the desktop app, and a browser
 shows them read-only.
 
 ## Find a setting
@@ -15,22 +15,23 @@ shows them read-only.
 Select **Settings** in the sidebar. **Restore defaults** resets only the **Data
 display** preference.
 
-![The Settings page in dark theme with the Appearance tab open: Color theme, and Compact density marked Coming soon.](../images/settings/appearance.jpg)
+![The Settings page in dark theme with the Appearance section open: a Workspace appearance card with Color theme as a Light and Dark switch, Dark pressed, and Compact density marked Coming soon.](../images/settings/appearance.jpg)
 
-*Pomegr 0.5.3 running in a browser on the project's own development machine,
-captured on 2026-09-30.*
+*The Pomegr 0.10.0 desktop app on the project's own development machine,
+captured on 2026-11-03.*
 
-| Tab | What it does | Available in |
+| Section | What it does | Available in |
 | --- | --- | --- |
-| **Appearance** | Switches the **Color theme** between dark and light. **Compact density** is marked **Coming soon**. | Desktop app and browser |
+| **Appearance** | Switches the **Color theme** between **Light** and **Dark**. **Compact density** is marked **Coming soon**. | Desktop app and browser |
 | **Notifications** | Turns **Desktop notifications** on or off, chooses **Needs input**, **Provider updates**, and **Model news**, and pauses delivery with **Quiet for one hour**. The two news choices start off. **Completed session updates** reads **Coming soon**. | Change in the desktop app; a browser reads **Desktop managed** |
 | **Desktop** | Chooses what happens **When closing the window**: **Ask**, **Keep in tray**, or **Quit**. | Desktop app only |
-| **Phone access** | Shares the dashboard, read-only, with a paired phone on your private network. See [Phone access](phone-access.md). | Desktop app only |
+| **Phone** | Shares the dashboard, read-only, with a paired phone on your private network. See [Phone access](phone-access.md). | Desktop app only |
 | **Providers** | Chooses the Claude Code and Codex folders Pomegr observes. | Change in the desktop app; view in a browser |
 | **GitHub** | Shows whether the GitHub CLI is installed and signed in, and what your account can do in each repository. See [GitHub issues](github-issues.md#connect-github). | Desktop app only; a browser reads **Desktop managed** |
+| **Aril** | Turns Aril on or off, and holds Aril's memory, conversation space, and effort routing. See [Agent chat](agent-chat.md#turn-aril-on-or-off). | Desktop app; a paired phone only as that page describes |
 | **Storage** | Limits how long and how large Pomegr's resource history grows. | Change in the desktop app; view in a browser |
-| **Data display** | Shows or hides the **API list-rate estimate**. | Desktop app and browser |
-| **About** | Shows the version, updates, privacy notes, and license. | Desktop app and browser; update controls only in the desktop app |
+| **Data** | Shows or hides the **API list-rate estimate** under **Data display**. | Desktop app and browser |
+| **About** | Shows the version, updates, privacy notes, how to report a problem, and the license and legal documents, which open inside Pomegr. | Desktop app and browser; update controls only in the desktop app |
 
 A browser on the same computer, or a [paired phone](phone-access.md), sees
 **Providers** and **Storage** without the controls that change them. Alerts and
@@ -59,10 +60,11 @@ effective folders as read-only text, or **Path unavailable**.
    applies the values at its next start and pruning cycle. Unset values use the
    defaults, 90 days and 500 MB.
 
-![The Storage tab in a browser: retention age 90 days, a 500 MB threshold, 43 MB used, and a note that storage settings are read-only in the browser.](../images/settings/storage.jpg)
+![The Storage section in the desktop app: Retention age set to 90 days, a 500 MB cleanup threshold, 5.8 MB of 500 MB used, the storage status line, and the Discard changes and Save and restart Pomegr buttons.](../images/settings/storage.jpg)
 
-*The same development install. This browser view is read-only, so the controls
-are disabled.*
+*The same desktop app, in a new profile with a small store. The buttons are dimmed
+because nothing has changed yet, and the app writes dates in UTC, so the oldest
+retained day reads 4 Nov. A browser shows the same section read-only.*
 
 Pruning only trims Pomegr's own resource curves and detailed sample windows. It
 never removes sessions, transcripts, checkpoints, file history, or recorded
@@ -127,10 +129,20 @@ The desktop app puts an icon in the Windows notification area. Its menu offers
   introduction or retirement headlines are covered; missing catalog rows never
   mean retirement. Claude model news and account-access checks are unavailable.
   The notification tray can still show an occurrence while native
-  delivery is disabled or quiet. **Mark all read** clears its unread indicator;
-  it does not end an active Needs input condition. Read markers stay in this
-  browser's local storage for up to 30 days. The desktop app's browser read
-  markers can reset on restart, and they do not control Windows delivery.
+  delivery is disabled or quiet. Opening the tray marks everything it shows as
+  read and clears the unread indicator on the bell. Entries that were unread
+  keep a **New** mark until you close the tray. Reading does not end an active
+  Needs input condition. Read markers stay in this browser's local storage for
+  up to 30 days. The desktop app's browser read markers can reset on restart, and
+  they do not control Windows delivery.
+- **Aril follow-ups** are on by default. Follow-ups that arrive in a row and
+  need nothing from you are one entry in the tray, with the earlier lines folded
+  under it. A follow-up that needs you is its own entry and its own Windows
+  notification. A routine follow-up never opens a Windows notification by
+  itself. When five or more wait and the oldest is more than an hour old,
+  Windows shows one summary, at most once an hour, and not while the Pomegr
+  window is in front. Pomegr counts a follow-up as waiting until the window was
+  last in front after it arrived.
 - Codex asynchronous questions can show **Needs input** while the agent continues
   working. An accepted question submission is not an answer. Codex's recorded
   messages do not reliably identify which asynchronous question a later reply

@@ -166,11 +166,11 @@ coding tool has a **Pomegr plugin** row with a chip (**Enabled**, **Disabled**,
 **Not installed**, **Unable to verify**, or **Checking plugin setup**), the
 installed version and scope, and whether an update is available.
 
-![The Plugin tab for the Pomegr repository: Claude Code plugin Enabled at v0.7.1 with v0.7.4 available, and Codex plugin Enabled at v0.7.4, Up to date.](../images/reporting-plugins/plugin-tab.jpg)
+![The Plugin tab for the Pomegr repository: the Claude Code and Codex plugins are each Enabled at v0.9.18, User installation, Up to date, with a Recheck button beside each.](../images/reporting-plugins/plugin-tab.jpg)
 
 *The Pomegr project's own repository, a real development view captured on
-2026-09-30 from Pomegr 0.5.3 in a browser, so the desktop-only buttons are
-absent.*
+2026-11-03 from the Pomegr 0.10.0 desktop app. Both plugins were current, so the
+image shows no **Update plugin** button.*
 
 In the desktop app, **Recheck** reads the local records again. **Install plugin**
 and **Update plugin** appear only when Pomegr can verify the official source and
@@ -180,13 +180,13 @@ Update availability compares with the official marketplace and is cached for an
 hour. **Unable to verify** means Pomegr could not read the local records, not that
 the plugin is missing.
 
-The **Reporting** tab shows the policy as **Configured** with its version,
-**Not configured**, **Invalid**, or **Unavailable**. Pomegr never creates or
+The **Reporting** tab shows the policy as **Configured**, with its version when
+Pomegr recognizes it, **Not configured**, **Invalid**, or **Unavailable**. Pomegr never creates or
 changes it; use `init` as above.
 
-![The Reporting tab for the Pomegr repository: Configured, Shared repository policy, Version 7, and the Set up reporting in your coding agent instructions.](../images/reporting-plugins/reporting-tab.jpg)
+![The Reporting tab for the Pomegr repository: Configured, Shared repository reporting policy, and the Set up reporting in your coding agent instructions.](../images/reporting-plugins/reporting-tab.jpg)
 
-*The same real Pomegr development view.*
+*The same real Pomegr development view. This policy shows no version number.*
 
 ## If reporting is missing
 

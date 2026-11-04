@@ -6,11 +6,12 @@ description: "Plan work on a repository's task board, queue it, and have the Pom
 # Tasks
 
 A task board holds the work you want coding agents to do in one repository. You start
-a session for a task yourself, turn on the queue and let the desktop app start tasks
-one after another, or start an [Aril grant](#aril-grants). After a start, Pomegr only
+a session for a task yourself, or turn on the queue and let the desktop app start tasks
+one after another. After a start, Pomegr only
 observes the session: it never attaches to, answers, or approves anything in a
-running session, and it ends the session only when its task is done
-([Done ends the task's sessions](#done-ends-the-tasks-sessions)). Observing sessions
+running session. It ends a session only when its task is done
+([Done ends the task's sessions](#done-ends-the-tasks-sessions)), or when the session is idle
+and its task is in Review ([Review ends idle sessions](#review-ends-idle-sessions)). Observing sessions
 works the same whether or not you use tasks.
 
 Click through the demo below to see a board at work. It is a demo with sample tasks,
@@ -55,9 +56,21 @@ you started outside Pomegr, and it never ends a session for another task.
 When you choose **Mark done** or drag a card into **Done** in the desktop app, an idle session
 ends at once. If the session is still working, Pomegr asks first: "Its session is still working.
 End it?" **End session** ends it. **Keep it running** leaves it running until you close Pomegr. Both
-choices mark the task done. A session that is still working when a grant marks a task done is left
+choices mark the task done. When you mark a task done on your phone, a session that is still working is left
 running, and Pomegr ends it later if it goes idle and the task is still done. Pomegr also ends the
-idle sessions of tasks that were done before you updated, or that you marked done on your phone.
+idle sessions of tasks that were done before you updated.
+
+### Review ends idle sessions
+
+Aril can start builds and reviews by itself, so idle sessions of tasks in **Review** can
+pile up. Each one uses memory, and the terminal holds a limited number of sessions.
+Pomegr ends the sessions it started for a task in **Review** after they stay idle for two
+minutes. This covers the builder session and any review session, and it needs no setting.
+
+A session is not idle while a command it started still runs. Examples are a watcher on CI,
+a dev server, or a command in the background. Pomegr also never ends a session that is working
+or whose state it does not know. It never ends a session you started outside Pomegr. To work in an ended session again, open it
+in the desktop app and select **Continue**. Pomegr never resumes a session by itself.
 
 ### Read the task log
 
@@ -75,84 +88,37 @@ and adds **Rework** to the log. Causes are declarations, not automatic detection
 ### Aril settings
 
 Open **Settings** and select **Aril** to turn Aril on or off, edit memory, and see the space conversations take.
-**Aril settings** above the board opens the same section, with the memory of that board's repository open.
+Each repository has its own memory tab there.
 
 The **Memory** card has a tab for each repository: free text of at most 6,000 characters about how things are done there. Aril keeps it current
 and you can edit it; it is context and not permission (see [Aril's settings and memory](agent-chat.md#arils-settings-and-memory)).
 
 Paired devices can read the memory. To let a phone also turn Aril on and change a repository's memory and Aril's settings, turn on the small switch under Aril's switch in the desktop app.
-One switch covers every repository, and only the desktop app can change it. Settings no longer has a card for each repository, and a grant's own settings (actions, limits, and work rules) are not in Settings either. The reviewer choice will move to an agreement, when agreements replace grants.
+One switch covers every repository, and only the desktop app can change it. Settings has no card for each repository.
 
-### Aril grants
+### Aril's settings for merging and reviewing
 
-A grant lets the desktop app run a repository's selected Ready tasks while you are away. Only you
-start a grant, in the desktop app or on a paired phone you allow. Aril settings alone grant no
-action. A grant ends at its end time or when you quit Pomegr, and it never renews itself.
-
-Settings no longer offers a grant's actions, limits, or work rules, or a way to start one: a later version replaces grants with agreements you settle in the chat. A grant that is still running keeps one line in **Settings**, under **Aril**, with its end time and **Stop grant**. A phone can always stop a grant.
-
-How a grant that was started earlier counts its limits:
-
-| Limit | What it counts |
-| --- | --- |
-| **Hours** | How long the grant lasts. |
-| **Tasks** | The different tasks the grant takes on. A task counts once, when the grant first starts it. Its reviews and send-backs are part of that task. |
-| **Tasks at a time** | The taken tasks that are open. A task is open until it is merged, marked done, or needs you. |
-| **Send-backs per task** | How often Aril sends one task back after a failed review. |
-| **Usage limit %** | The provider usage at or above which the grant starts nothing. |
-
-A task needs you when it is blocked, out of send-backs, or has a refused merge for its current
-pull-request head. When the grant has taken **Tasks** tasks, it starts no new task. It keeps reviewing,
-sending back, and merging the open ones, and it ends when none remains open.
-
-While a grant is active, the desktop app does these things, as far as you allowed them, without asking for each one:
-
-- **Start.** It starts the Ready tasks that your work rules select, in Ready order, behind every
-  [start gate](tasks-start-gates.md).
-- **Review.** It starts a separate reviewer session for a task in **Review**. The reviewer runs the
-  repository's checks, changes no code, and reports pass or fail.
-- **Send back.** After a failed review, it starts a new builder session in the same worktree. When the
-  send-backs are used, the task stays in **Review** for you.
-- **Merge.** With **Merge on green**, it merges a task's open pull request only after the latest review
-  passed and CI passed for the known pull-request head. It attempts each head commit once. The task
-  stays in **Review** for your **Mark done**, unless you also allowed **Mark done when acceptance passes**.
-- **Mark done.** With **Mark done when acceptance passes**, it marks a task **Done** after its pull request
-  merged, when a fresh check shows every **Complete when** condition passed and its review passed (when reviews
-  are on). A condition Pomegr could not check is no pass. A task with no **Complete when** condition, or whose
-  **Complete when** asks for your validation, stays yours. Tasks that run after it can then start. The task's
-  idle sessions end, and a session that still works is left running. The log reads “Marked done by Aril under a grant”.
-- **Write tasks.** With **Write tasks from plans**, Aril creates tasks in **Ready** from the next unbuilt
-  step of the plans you named. It writes at most **Tasks** tasks, and they join the grant's work set.
-
-Choose how a grant merges before it may merge. Ask Aril to propose these settings: it reads the
-repository's own rules and GitHub settings first.
+Aril keeps a few settings for a repository. It proposes them after it reads the repository's own rules and
+GitHub settings, and you save them with **Apply changes**. In this version nothing acts on them for you:
+Pomegr merges no pull request, sends no task back, and marks no task done unless you do it.
 
 - **Merge method.** The repository default, unless you choose **Squash**, **Merge commit**, or **Rebase**.
   If the repository allows several methods, choose one.
 - **Merge mode.** **Merge when green** merges once CI passes. **Auto-merge when green** asks GitHub to merge
   through the repository's auto-merge or merge queue, when its rules allow. The repository must allow
-  auto-merge. The log then reads “Auto-merge enabled by Aril”.
-- **Delete branch after merge.** **Repository default** leaves it to GitHub's own setting, and Pomegr deletes
-  nothing. **Delete** deletes the task's branch from the repository after its pull request is merged, never the
-  default branch or a fork's branch. **Keep** deletes nothing. A grant that used all its tasks waits up to ten
-  minutes after the last merge for that deletion.
-- **Send follow-ups.** On by default. After grant actions, Aril adds a short line to the chat and sends a
-  notification. See [Agent chat](agent-chat.md).
+  auto-merge.
+- **Delete branch after merge.** **Repository default** leaves it to GitHub's own setting. **Delete** deletes the
+  task's branch after its pull request is merged, never the default branch or a fork's branch. **Keep** deletes
+  nothing.
+- **Reviewer.** The provider and model that review a task, and whether the reviewer must differ from the builder.
+- **Plans.** Markdown files in the repository that name the work to come.
+- **Guards.** How often a failed review may send one task back (3 when unset), and the provider usage percent at
+  which Aril starts nothing (the provider's own limit when unset). A task sent back continues its builder's session,
+  and the next review continues the reviewer's session, once those sessions have ended; a session that is still
+  running makes the task wait, and a session that cannot be continued is replaced by a new one.
 
-The grant starts no task, review, or send-back for a provider whose usage is unknown, stale,
-unavailable, or at the usage limit. Writing tasks waits the same way for the provider that would run it.
-It resumes when that usage is current and below the limit. Merges are never held for usage.
-
-To see what a grant did, select **Log**; see [Read the task log](#read-the-task-log). The log lists each start,
-review, send-back, merge, branch deletion, and written task. It also lists each usage pause and resume
-with the provider name, and each refused merge or branch deletion.
-To watch a review, open the task's **Terminal** tab in the desktop app. It lists the task's build and review
-sessions, and a review carries a **Review** label.
-
-The strip above the board shows **Aril grant until** the end time, and the **Aril** section of Settings shows the tasks used.
-Select **Stop grant** to stop every further grant action at once. Running sessions continue, because
-stopping a grant ends no session. A paired phone can always stop a grant. It can start one only when you allow
-paired devices with the switch under Aril's switch in Settings. That section shows when the last grant ended and why.
+To watch a review you started, open the task's **Terminal** tab in the desktop app. It lists the task's build and
+review sessions, and a review carries a **Review** label.
 
 ## Before you start
 
@@ -219,23 +185,23 @@ task's **Terminal** tab still finds an ended review.
 ## Run the queue
 
 1. Open a task and select **Add to queue**. Its card moves to **Ready**, last.
-2. Select **On** in the **Queue** switch of the Tasks header. The queue is **Off** for
+2. Turn on the **Queue** switch at the top of the board. The queue is **Off** for
    every repository until you turn it on.
 3. The queue starts the top waiting card of **Ready**. It starts the next card when that
    task is in **Review** or **Done**.
 
-To change the order, drag a queued card up or down in **Ready**. A waiting card says
-what it waits for. The queue works only while Pomegr is open, and turning it off never
+To change the order, drag a queued card up or down in **Ready**. The line under the
+switch says what happens next. The queue works only while Pomegr is open, and turning it off never
 touches a running session. [Task queue](tasks-queue.md) explains the wait reasons and
 what to do when the queue stops. To run cards at the same time, or to make one task
 wait for another, see [Parallel tasks and Runs after](tasks-order.md).
 
 ## What Pomegr does not do
 
-- It never attaches to, answers, or approves work in a running session, and it ends a
-  session only when its task is done. A pull
-  request can be merged only by the desktop runner under an active grant, after passing
-  CI and review. Only you mark a task Done, or a grant you allowed to, after its acceptance passes.
+- It never attaches to, answers, or approves work in a running session. It ends a
+  session only when its task is done, or when the session has stayed idle for two minutes
+  and its task is in **Review**. It
+  merges no pull request, and only you mark a task Done, after its acceptance passes.
 - It makes no AI judgment about whether work is complete. It compares the agent's
   report with observed facts. The own condition is the agent's judgment. An unknown
   fact never passes.

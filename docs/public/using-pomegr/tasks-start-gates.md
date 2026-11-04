@@ -11,8 +11,9 @@ path, see [Tasks](tasks.md).
 
 ## Start gates
 
-**Queue settings** on the Board lists each reading. A held queued task shows "Waiting:"
-with the reasons (see
+**Queue settings** on the Board lists each reading. The queue strip shows none of them,
+and its next line names what holds the next task. A held queued task lists its reasons in
+its window (see
 [See why a queued task has not started](tasks-queue.md#see-why-a-queued-task-has-not-started)).
 A missing, stale, or partial reading is unknown, and unknown holds a start exactly like
 a failed gate.

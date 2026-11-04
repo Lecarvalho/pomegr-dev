@@ -253,7 +253,7 @@ async function readPayload(stream) {
 function startupSessionId(payload) {
   if (!payload) return null;
   if (typeof payload.agent_id === "string" && payload.agent_id) return null;
-  if (payload.source !== void 0 && payload.source !== "startup") return null;
+  if (payload.source !== void 0 && payload.source !== "startup" && payload.source !== "resume") return null;
   return typeof payload.session_id === "string" && SESSION_ID.test(payload.session_id) ? payload.session_id : null;
 }
 async function runBindTaskHook({

@@ -91,11 +91,11 @@ uncommitted at the last check, and **Changed elsewhere** lists the uncommitted
 files the session did not touch, so no file appears in both. The **Beta**
 chip means file coverage is still growing.
 
-![A recorded session's Repository tab: the main branch bar, Touched here, Uncommitted, and Changed elsewhere counts, and Dashboard.tsx selected with the text Seen in Git, no recorded agent edit.](../images/repositories/session-repository-tab.jpg)
+![A recorded session's Repository tab: a task branch bar with 1 ahead of origin/main and Open PR #414, the Touched here 17, Uncommitted 0, and Changed elsewhere 0 counts, and THIRD_PARTY_NOTICES.md selected with the text Committed by this session, no recorded agent edit.](../images/repositories/session-repository-tab.jpg)
 
-*A real recorded Claude Code session from the Pomegr project. Files with the Git
-glyph were seen by Git, not recorded as agent edits. This capture predates the
-current wording and matching rule.*
+*A real recorded Claude Code session from the Pomegr project,
+captured on 2026-11-03 from Pomegr 0.10.0. A file with the Git glyph comes from a
+commit made while the session ran a Git command, not from a recorded agent edit.*
 
 Select a file with a recorded change to see **Recorded in this session**, its
 kind, its change count, and the agents that made it. A file with the Git glyph

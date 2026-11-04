@@ -28,8 +28,10 @@ Only features that are not done are offered for a new attachment.
 
 - **Attach a task.** Choose the feature in the task's **Feature** field, or select **New
   feature…** there to name a new one.
-- **Filter the board.** Select a feature chip in the filter row to show only its tasks.
-  The row reads, for example, "3 of 7 tasks done · 2 running".
+- **Filter the board.** Select a feature chip above the lanes to show only its tasks. Each
+  chip shows the feature's number of tasks. The chips are the three features with the
+  most open tasks; choose any other feature in **More**. A line under the chips reads, for example,
+  "3 of 7 tasks done · 2 running".
 
 ## Create, edit, mark done, and delete a feature
 
@@ -37,13 +39,13 @@ You make, edit, and delete features in the Pomegr desktop app. A browser or a pa
 phone shows features but does not change them, except that a task's **New feature…**
 field still names a feature from a title alone.
 
-1. To create a feature, choose **+ New feature** on the Board, in the row above the
-   lanes. While the board has no feature, the button is in the page header instead.
+1. To create a feature, choose **+ New feature** at the end of the feature chips above
+   the lanes. While the board has no feature, it is the only item in that row.
 2. Enter a **Title**. It is the only required field.
 3. Optionally enter a **Description** and an **App version**. The counters show how
    much room is left.
 4. Choose **Create feature**. It stays disabled until the title holds text.
-5. To edit a feature, choose it in the **Feature** filter above the board, then choose
+5. To edit a feature, select its chip above the board, then choose
    **Edit feature**. The description and the app version load when the window opens.
    If they cannot be read, those two fields stay disabled and you can still rename the
    feature.

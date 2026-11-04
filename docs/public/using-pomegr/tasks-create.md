@@ -124,7 +124,7 @@ with **PR open** and **Tree clean** checked.
 When the agent reports, Pomegr reads the repository and its pull requests at that
 moment and checks the conditions against that read, so the report can take a few
 seconds. If Pomegr cannot read a fact, the condition does not pass and the task lands
-in **Needs review**. A command that is still running, such as a development server,
+in **In review**. A command that is still running, such as a development server,
 keeps **Tree clean** from passing until it ends. [Review a report](tasks-queue.md#review-a-report)
 explains the results.
 

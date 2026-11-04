@@ -30,11 +30,14 @@ whole group together, one task after another in the same check.
 - **When the next card starts.** The cards after a group wait until every task of the
   group is in **Review** or **Done**. A task you took out of the queue no longer counts.
 - **A held member.** A member that a start gate holds, for example while a provider has
-  an incident, keeps its place and shows "Waiting:" with the reasons. It starts when the
+  an incident, keeps its place. The queue strip names the hold while the card is next. It starts when the
   gate opens. Its siblings start without it, and the cards after the group still wait
   for it. A member scheduled for a later time holds nothing.
-- **A waiting card behind running work.** A card that an earlier task holds reads
-  "Waiting: T-n is running".
+- **A waiting card behind running work.** A card that an earlier task holds waits for it.
+  The task window names the running task.
+- **A group that runs keeps its frame.** While its members run, the frame stays in
+  **In progress** with the number of members. A member whose sibling is in another
+  column names it, such as "With T-12 · waiting to start".
 - **A group lasts while it has work.** When a member reaches **Review**, **Blocked by
   agent**, **Stalled**, or **Done**, or leaves the queue, it is no longer in the group. A
   group with only one task left is no group.
@@ -111,8 +114,8 @@ accepted.
   deleted. **Review** is not enough. Neither the queue nor **Start session** starts it.
 - **It does not reorder the queue.** The queue passes a waiting task and starts the
   cards after it. When the task is free, it starts at its place in **Ready**.
-- **The card says so.** A card reads "Runs after T-13 and T-14", and a queued card reads
-  "Waiting: runs after T-13, which is not done".
+- **The card says so.** A card that has not started reads "After T-13 and T-14" with a
+  clock. The task window gives the full reason.
 - **No loops.** A choice that would make tasks wait for each other is refused with
   "These tasks would wait for each other, so nothing was changed."
 - **Remove it** with **Remove** on the row. A task that has started cannot be changed.

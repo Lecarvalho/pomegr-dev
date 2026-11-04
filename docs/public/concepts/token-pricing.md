@@ -122,7 +122,7 @@ Code API list-rate estimate" and the note "Estimate, not a bill." Claude Code
 calculates the figure at standard API list rates and Pomegr shows what it
 recorded, so it can differ from an actual API bill and is not the marginal cost
 of subscription usage. Without local usage the panel does not appear, Codex
-sessions have no estimate, and **Settings → Data display** can hide it. See
+sessions have no estimate, and **Settings → Data** can hide it. See
 [Signals and estimates](signals-and-estimates.md#agent-reported-progress-and-signals).
 
 ## Limits
