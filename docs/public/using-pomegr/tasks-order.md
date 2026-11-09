@@ -66,10 +66,10 @@ You can arrange cards in **Backlog** before you queue any of them, the same way
 
 Each member of a group starts in a Git worktree of its own, on a branch named
 `tasks/<task ID>`, so parallel agents do not edit the same files. The worktree begins
-at the repository's current commit, so uncommitted changes in the repository are not
-part of it. A task in no group runs in the repository itself, whatever its feature,
-unless you choose a [separate worktree](tasks-start-gates.md#start-in-a-separate-worktree)
-for one manual start.
+at the repository's default branch, so uncommitted changes in the repository are not
+part of it. A task in no group runs in the repository itself only when the repository
+is clean and no other session works in it, and otherwise in its own worktree (see
+[Where a task starts](tasks-start-gates.md#where-a-task-starts)).
 Pomegr keeps its worktrees inside the repository, in `.pomegr/worktrees/<task ID>`.
 That folder ignores its own contents, so the worktrees do not show as changes in the
 repository.

@@ -55,7 +55,7 @@ reason, and every task that starts first.
 | the queue is off | You have not turned the queue on. Nothing is wrong. |
 | the queue is blocked by T-2 | That task stalled or was blocked by its agent. Resolve it first. |
 | the queue is paused at T-3 | A start failed. See [If a start fails](#if-a-start-fails). |
-| a start gate, such as "the working tree has uncommitted changes" | A [start gate](tasks-start-gates.md) holds the start. |
+| a start gate, such as "the working tree state is not known yet" | A [start gate](tasks-start-gates.md) holds the start. |
 | the queue starts Oct 9, 22:00 | The queue's own start or stop time holds it. |
 | the reason is not known yet | Pomegr has no fact that explains the wait. It never assumes that a gate passed. |
 
@@ -95,7 +95,9 @@ task window says "The session has not reported. Mark done ends it; Requeue does 
   still working, Pomegr asks first: **End session** or **Keep it running**. Either way the task is
   done, and a later report from that session changes nothing.
 - **Requeue task** clears the session link, so a later report from the old session is
-  not accepted. It does not stop the session.
+  not accepted. It does not stop the session at once: once that session has stayed idle for two
+  minutes and the task is not **In progress**, Pomegr ends it
+  ([Idle sessions end](tasks.md#idle-sessions-end-unless-their-task-is-in-progress)).
 
 ## Review a report
 
@@ -140,14 +142,15 @@ one of these reasons. Fix it, then select **On** again to retry.
 | Its worktree has uncommitted changes, and Pomegr never removes them. | Select **Open folder** in the banner (desktop app, Windows), commit or discard the changes there, then select **On** again. |
 | The Windows environment is too large for a session, or has a variable name a session cannot take. | Shorten or remove the variable in Windows environment variables, then select **On** again. |
 | The terminal window could not be opened. | Select **On** to retry. |
-| The terminal opened, but the session did not report back. | Check the plugin, and for Codex that its hooks are trusted. |
+| The terminal opened, but the session never appeared before the process exited. | Open the task's terminal to read why the program stopped, then select **On** again. |
 
 - Without the plugin, with a plugin older than 0.9.0, or when Pomegr cannot read its
   version, a start is refused with "Install or update the Pomegr plugin in this
   repository to start sessions."
 - If Pomegr cannot find the Claude Code or Codex program, a start says "The
   provider's command-line tool was not found on this computer."
-- Codex runs plugin hooks only after you trust them.
+- Codex runs plugin hooks only after you trust them. Linking a session Pomegr started
+  does not depend on them.
 - On Windows, each session Pomegr starts gets your user and system environment
   variables as they are at that start. A variable you add or remove takes effect at
   the next start without restarting Pomegr.

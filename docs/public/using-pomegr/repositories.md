@@ -84,22 +84,28 @@ The commit count (for example "3 commits in this session") counts every commit o
 the branch during the session, including other people's, so it does not attribute
 them to the session.
 
-**Touched here** lists files with a recorded change, plus files in commits made
-while the session ran a Git command. A file that only changed while the session
-was open is not listed. **Uncommitted** lists the touched files that were
-uncommitted at the last check, and **Changed elsewhere** lists the uncommitted
-files the session did not touch, so no file appears in both. The **Beta**
-chip means file coverage is still growing.
+For a live session, one tree lists every changed file in the session's folder,
+beside one continuous scroll of their diffs. The line above the scroll names what
+the diffs compare with, such as the default branch at the merge base plus
+uncommitted changes. A dot marks each file the session touched: a recorded change,
+or a file in a commit made while the session ran a Git command. **All** and
+**This session** filter the tree, and the search finds a file by its path. The file
+in view is highlighted in the tree as you scroll, and selecting a file in the tree
+jumps to it. On a phone, the bar above the diffs names the file in view and opens
+the tree.
 
-![A recorded session's Repository tab: a task branch bar with 1 ahead of origin/main and Open PR #414, the Touched here 17, Uncommitted 0, and Changed elsewhere 0 counts, and THIRD_PARTY_NOTICES.md selected with the text Committed by this session, no recorded agent edit.](../images/repositories/session-repository-tab.jpg)
+Pomegr reads a diff only as its file comes into view. A binary file, a diff too
+large to show, or a file that can hold secrets shows one line instead of a diff.
+For a session that is no longer live, the tree lists the files it touched and the
+files uncommitted at its last check. Each touched file shows what was committed by
+the session's last check, read from Git's own history, never from the folder as it
+is now. A file that was still uncommitted then has no diff, and neither does a
+session whose commits Git no longer holds or that ended before Pomegr recorded them.
 
-*A real recorded Claude Code session from the Pomegr project,
-captured on 2026-11-03 from Pomegr 0.10.0. A file with the Git glyph comes from a
-commit made while the session ran a Git command, not from a recorded agent edit.*
-
-Select a file with a recorded change to see **Recorded in this session**, its
-kind, its change count, and the agents that made it. A file with the Git glyph
-shows "Committed by this session · no recorded agent edit" instead. Pomegr matched
+Under each file's name, one line names the agents that changed it, with their
+model, the kind of change, its change count, and its time. A file only a session
+commit changed shows "Committed by this session · no recorded agent edit" instead,
+and a file someone else changed shows "Not changed by this session". Pomegr matched
 the commit by time to a Git command the session ran, so it cannot tell which agent
 changed the file, and a commit someone else made in those same seconds would match
 too. Pomegr never attributes a Git-observed file to an agent or

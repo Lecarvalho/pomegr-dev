@@ -59,7 +59,7 @@ it; they are the only tools that change something you made or that Pomegr manage
 | `remove_task` | Deletes a task that the same session added, if the task has not started. |
 | `assign_task` | Assigns the session to a task of the board that is not done, so the session can report it. It changes no state and starts nothing. |
 | `unassign_task` | Removes the session's own assignment from a task. |
-| `complete_task` | Reports that a task of the session is complete. The task goes to **Review**. An earlier block still holds the queue until you resolve it. A plain completion takes no input. The optional `attention` field gives the owner one line to look at. Optional `reworks` names earlier work this task fixes, with causes. |
+| `complete_task` | Reports that a task of the session is complete. The task goes to **Review**. An earlier block still holds the queue until you resolve it. A plain completion takes no input. The optional `attention` field gives the owner one line to look at. Optional `reworks` names earlier work this task fixes, with causes. The answer asks the session to stop its background shells and end its turn, so Pomegr can end it and, after a failed review, continue it with the findings. |
 | `report_review` | Reports pass, or fail with one-line reasons, without changing task state. Only you decide what happens next. |
 | `block_task` | Reports that the agent cannot continue a task, with a short reason. Optional `reworks` names earlier work this task fixes, with causes. |
 | `get_feature` | Reads the title, description, and app version of one feature. |
@@ -69,6 +69,25 @@ it; they are the only tools that change something you made or that Pomegr manage
 
 `report_review` works only in a review session Pomegr started for a task. It needs plugin 0.9.15 or later.
 
+When `report_review` is refused, the answer says why and what to do. Plugin 0.9.20 or later shows these answers:
+
+| Answer starts with | Meaning | What to do |
+| --- | --- | --- |
+| "No verdict was recorded: Pomegr has not linked this session to a task's review." | Pomegr did not start this session as a reviewer, or the link of the review it started failed. | For a session you started yourself, nothing: only a review session Pomegr starts can report. For a review Pomegr started, read the verdict in its terminal and start the review again from the task in **Review**. |
+| "No verdict was recorded: this session reviews another task" | The `task_id` names a task this session does not review. | The session calls `report_review` again without `task_id`, or with its own task. |
+| "No verdict was recorded: this session's review of the task is no longer the current one" | A send-back, a newer review, or the end of the task's stay in **Review** replaced this review. | Read the verdict in its terminal. Only the task's current review can report. |
+| "The task is no longer in Review" | The task left **Review** before the verdict arrived. | Nothing. The verdict no longer applies. |
+
+From plugin 0.9.20, `complete_task` and `block_task` answer at once.
+Pomegr applies the report when it reads the call in the session's own transcript, so a
+report made before Pomegr linked the session to its task still counts, and a report
+works while Pomegr is closed: Pomegr applies it when it next reads the session. A call
+the tool answers as invalid changes nothing. A report Pomegr refuses, such as one for a
+task that is done or not the session's, is written to the task's log. A plugin up to
+0.9.19 sends its reports to Pomegr directly. Plugin 0.9.20 also sends them directly, in
+the background, so an earlier desktop app still gets them. Pomegr applies each report
+once.
+
 `complete_task` and `block_task` work in a session that Pomegr started for a task, and
 in a session that is assigned to a task. A session with more than one task names the
 task with `task_id`. The latest report wins until you mark the task done. A later completion keeps an existing block until you resolve it. `assign_task` and `unassign_task`
@@ -77,7 +96,7 @@ need plugin 0.9.8 or later. `get_task` and `list_tasks` need plugin 0.9.13 or la
 `reworks` takes 1-5 `{ ref, cause }` entries, only when the session knows which earlier work this task fixes or redoes.
 References are board tasks (`T-n`) or repository pull requests (`#n`).
 Causes are `missed_wiring`, `spec_gap`, `wrong_behavior`, `stale_instructions`, `latent`, or `other`.
-Each answer identifies recorded, existing, or refused links by reference; a refused link does not undo the report.
+Pomegr records each link when it applies the report; a refused link does not undo the report. Up to plugin 0.9.19, the answer identifies recorded, existing, or refused links by reference.
 This field needs plugin 0.9.16 or later; older plugin versions reject it.
 Update both and start a new session to load the new tool schema.
 
@@ -116,3 +135,18 @@ A later call discovers the current runtime after a Pomegr restart. This read cha
 nothing. An unavailable answer does not say whether the task exists. Feedback about
 an unbound call, an unknown session, or an unresolved repository instead identifies
 that separate setup problem; start with the provider's doctor command above.
+
+## If a call cannot reach Pomegr
+
+From plugin 0.9.20, a task tool that cannot reach the Pomegr desktop app says why:
+
+- `No Pomegr desktop app is connected to this session` means that Pomegr is closed, or
+  that an older Pomegr copy, such as an old portable, removed its connection file. Open
+  Pomegr, or restart it if it is open, and then ask the session to make the call again.
+- `Pomegr's connection file for this session could not be read` means that the file is
+  damaged. Restart Pomegr, and then ask the session to make the call again.
+
+A desktop app later than 0.10.0 restores its connection file within a second when another
+Pomegr removes or replaces it, and the call waits for that, so a running session keeps
+working without a restart. From plugin 0.9.20, `complete_task` and `block_task` need no
+connection: Pomegr reads them from the session's transcript.

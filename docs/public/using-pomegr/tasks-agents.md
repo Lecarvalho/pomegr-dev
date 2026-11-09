@@ -48,6 +48,8 @@ call is refused. Nothing is then added, removed, reported, read, or changed.
 - In Claude Code's auto mode no prompt appears: Claude Code decides by itself and can,
   rarely, refuse one of these calls. If that happens, add a permission rule for the tool
   in your Claude Code settings.
+- On Claude Code 2.1.212 and earlier, auto mode refuses these calls, and the calls after
+  them in the same reply, more often. Update Claude Code, or add that permission rule.
 
 ## How a report is checked
 

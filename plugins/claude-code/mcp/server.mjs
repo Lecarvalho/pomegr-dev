@@ -16,8 +16,9 @@ import {
 } from "./signal-contract.mjs";
 import { normalizeSessionTitle, SESSION_TITLE_MAX_LENGTH } from "../../../shared/session-title.mjs";
 import { AGENT_QUERY_INSTRUCTIONS, registerAgentQueryTools, resolveCurrentSessionRef } from "../../../mcp/agent-query-tools.mjs";
-import { createAgentQueryReader, createAgentTaskWriter, defaultAgentQueryDataRoot, readAgentQueryDescriptor } from "../../../shared/agent-query-transport.mjs";
+import { awaitAgentQueryDescriptor, createAgentQueryReader, createAgentTaskWriter, defaultAgentQueryDataRoot } from "../../../shared/agent-query-transport.mjs";
 import { verifyTaskBindingProof } from "../../../plugin-src/task-binding-proof.mjs";
+import { takeTaskCallHandoff } from "../../../plugin-src/task-call-handoff.mjs";
 import { registerTaskTools, TASK_TOOL_INSTRUCTIONS } from "../../../mcp/task-tools.mjs";
 
 const HOOK_SESSION_REF = /^claude:[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/iu;
@@ -62,7 +63,7 @@ function rejected(text) {
 
 export function buildPomegrMcpServer(options = {}) {
   const server = new McpServer(
-    { name: "pomegr", version: "0.9.19" },
+    { name: "pomegr", version: "0.9.20" },
     { instructions: "Follow .pomegr/signals.md when present. Assign a concise native session title through rename_session after the work is clear, report bounded project-specific transitions and session progress, and clear resolved state when no replacement applies. " + AGENT_QUERY_INSTRUCTIONS + " " + TASK_TOOL_INSTRUCTIONS },
   );
 
@@ -140,17 +141,36 @@ export function buildPomegrMcpServer(options = {}) {
   const currentSessionRef = Object.hasOwn(options, "currentSessionRef")
     ? options.currentSessionRef
     : resolveCurrentSessionRef(options.environment ?? process.env);
-  registerAgentQueryTools(server, { query, currentSessionRef });
-  // Only the PreToolUse hook sets session_ref, and the schema cannot tell its value from one the model typed
-  // when hooks are off or time out. So the reference counts only with the hook's proof, keyed by the local
+  // Only the PreToolUse hook binds a session, and the schema cannot tell its value from one the model typed
+  // when hooks are off or time out. So a board call's reference counts only with the hook's proof, keyed by the local
   // capability token read at call time. Never fall back to the launch-time session ID.
   const taskDataRoot = options.dataRoot ?? defaultAgentQueryDataRoot();
+  // A descriptor that the running app is restoring gets the transport's short wait, as the hook's did.
   const readBindingToken = options.readBindingToken
-    ?? (async () => (await readAgentQueryDescriptor({ dataRoot: taskDataRoot }))?.token ?? null);
+    ?? (async () => (await awaitAgentQueryDescriptor({ dataRoot: taskDataRoot }))?.descriptor?.token ?? null);
   const now = options.now ?? Date.now;
+  // The hook hands each board call's proof, and each observation read's session, beside the call. The handoff is checked against the
+  // arguments exactly as Claude Code sent them, before the schema trims or defaults them, so the server keeps them for the call's parsed input.
+  const sentArguments = new WeakMap();
+  const validateToolInput = server.validateToolInput.bind(server);
+  server.validateToolInput = async (tool, args, name) => {
+    const parsed = await validateToolInput(tool, args, name);
+    if (parsed !== null && typeof parsed === "object") sentArguments.set(parsed, args ?? {});
+    return parsed;
+  };
+  // Claude Code starts this stdio server itself, so its parent is the Claude Code process whose hook wrote the handoff.
+  const host = options.host ?? process.ppid;
+  const takeHandoff = (input, extra, tool) => (sentArguments.has(input) ? takeTaskCallHandoff({
+    dataRoot: taskDataRoot, toolUseId: extra?.mcpReq?._meta?.["claudecode/toolUseId"], tool, host, input: sentArguments.get(input),
+    readToken: readBindingToken, now, ...(options.handoffWaitMs === undefined ? {} : { waitMs: options.handoffWaitMs }),
+  }) : null);
+  // A read that names no session is the calling session's: the hook's handoff binds it, or the hook's earlier rewrite names it.
+  registerAgentQueryTools(server, { query, currentSessionRef, resolveCurrentSession: takeHandoff });
   registerTaskTools(server, {
-    resolveSession: async (input, _extra, tool) => {
+    resolveSession: async (input, extra, tool) => {
       const ref = input?.session_ref;
+      if (ref === undefined && input?.session_proof === undefined) return takeHandoff(input, extra, tool);
+      // A Claude Code whose hook cannot hand off keeps the earlier rewrite: the two input fields, checked as before.
       if (typeof ref !== "string" || !HOOK_SESSION_REF.test(ref) || typeof input.session_proof !== "string") return null;
       try {
         const token = await readBindingToken();

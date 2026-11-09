@@ -108,8 +108,8 @@ starts a session or turns the queue on or off only through a proposal you apply.
 [Agent chat](../using-pomegr/agent-chat.md).
 
 After a start, Pomegr only observes the session: it never attaches to, answers, or
-approves anything in a running session. It ends a session only when its task is done,
-or when the session has stayed idle for two minutes and its task is in Review. Sessions always run on the
+approves anything in a running session. It ends a session only when its task is done, when the session has stayed idle for two minutes
+and its task is in Review, or when its task is deleted. Sessions always run on the
 computer running Pomegr. A paired phone can change tasks and apply Aril's proposals,
 but Aril's start proposals are applied in the desktop app. Observing sessions works
 the same whether or not you use tasks.

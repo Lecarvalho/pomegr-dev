@@ -23,7 +23,7 @@ a failed gate.
 | **Earlier task finished** | No task runs outside this task's own parallel group. Holds only the queue: **Start session** starts a task whatever is running. |
 | **Claude Code capacity** and **Codex capacity** | The provider is below the threshold for its five-hour window, or its weekly window for weekly-only Codex accounts. |
 | **Provider status** | The provider's public status shows no incident. |
-| **Working tree** | The repository's working tree has no uncommitted changes. |
+| **Working tree** | Pomegr can read the repository's working tree. Uncommitted changes do not hold a start. |
 
 - **Threshold.** It is 70, 85, or 95 percent, with 85 as the default, and applies to
   one repository. It uses the five-hour window. Codex accounts with only a weekly limit
@@ -32,8 +32,9 @@ a failed gate.
 - **Account-wide readings.** The readings are the
   [usage limits](../concepts/usage-limits.md) Pomegr already shows, so they cover your
   whole account. Public status does not prove that an incident affects you.
-- **Working tree.** The gate reads the repository itself, even for a task that will
-  start in its own worktree.
+- **Working tree.** The gate reads the repository itself. When the repository has
+  uncommitted changes, the task starts in its own worktree instead (see
+  [Where a task starts](#where-a-task-starts)).
 - **A held queued task** changes nothing: it waits, the queue stays on, and Pomegr
   judges again at the next check.
 - **A held manual start** says which gates hold it, for example "This task is held:
@@ -44,17 +45,25 @@ Keep the board open, wait 15 seconds, then select **Start session** again in the
 Pomegr checks again in background. An unavailable check keeps the task held; a successful check updates the gate.
 Check **Working tree** in **Queue settings** for the current reading. Pomegr never retries a held manual launch by itself.
 
-### Start in a separate worktree
+### Where a task starts
 
-When the working tree gate is the only gate that holds a manual start, the task window
-offers **Start in separate worktree**. The confirmation names the separate worktree and
-says that your uncommitted changes are not part of it and stay untouched.
+Pomegr picks the folder of every start itself. It does not ask you.
 
-- The session starts in the task's own [worktree](tasks-order.md#worktrees), on the
-  `tasks/<task ID>` branch, at the repository's current commit.
-- The choice is for that one start. Pomegr does not store it.
-- The queue never makes this choice. A queued task that the working tree gate holds
-  keeps waiting.
+- **In the repository.** A task starts in the repository folder only when the folder has no
+  uncommitted changes and no other session works in it. Before the start, Pomegr checks
+  out the default branch (such as `main`) and updates it from `origin`.
+- **In its own worktree.** Otherwise the task starts in its own
+  [worktree](tasks-order.md#worktrees), on the `tasks/<task ID>` branch. The branch starts
+  at the default branch, not at the branch the repository has checked out. Your
+  uncommitted changes stay in the repository, untouched.
+- **Two starts in a row.** The first can start in the repository. The second sees that a
+  session works there, so it starts in its own worktree.
+- **A task with a worktree** from an earlier start runs there again.
+- **If the checkout fails,** for example because another worktree has the default branch
+  checked out, the task starts in its own worktree.
+- **A review or a sent-back builder** that would run in the repository waits while another
+  session works there. A manual review says "Another session is working in this
+  repository's folder. Try again after it ends."
 
 ## Runs after
 

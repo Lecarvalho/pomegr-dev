@@ -10,8 +10,9 @@ a session for a task yourself, or turn on the queue and let the desktop app star
 one after another. After a start, Pomegr only
 observes the session: it never attaches to, answers, or approves anything in a
 running session. It ends a session only when its task is done
-([Done ends the task's sessions](#done-ends-the-tasks-sessions)), or when the session is idle
-and its task is in Review ([Review ends idle sessions](#review-ends-idle-sessions)). Observing sessions
+([Done ends the task's sessions](#done-ends-the-tasks-sessions)), when the session is idle
+and its task is in Review ([Review ends idle sessions](#review-ends-idle-sessions)), or when its task
+is deleted ([Deleting a task ends its sessions](#deleting-a-task-ends-its-sessions)). Observing sessions
 works the same whether or not you use tasks.
 
 Click through the demo below to see a board at work. It is a demo with sample tasks,
@@ -55,8 +56,8 @@ you started outside Pomegr, and it never ends a session for another task.
 
 When you choose **Mark done** or drag a card into **Done** in the desktop app, an idle session
 ends at once. If the session is still working, Pomegr asks first: "Its session is still working.
-End it?" **End session** ends it. **Keep it running** leaves it running until you close Pomegr. Both
-choices mark the task done. When you mark a task done on your phone, a session that is still working is left
+End it?" **End session** ends it. **Keep it running** leaves it running while it works: once it has stayed
+idle for two minutes with no command running, Pomegr ends it. Both choices mark the task done. When you mark a task done on your phone, a session that is still working is left
 running, and Pomegr ends it later if it goes idle and the task is still done. Pomegr also ends the
 idle sessions of tasks that were done before you updated.
 
@@ -69,8 +70,26 @@ minutes. This covers the builder session and any review session, and it needs no
 
 A session is not idle while a command it started still runs. Examples are a watcher on CI,
 a dev server, or a command in the background. Pomegr also never ends a session that is working
-or whose state it does not know. It never ends a session you started outside Pomegr. To work in an ended session again, open it
+or whose state it does not know, or one whose terminal you have open in the desktop app. It never ends a session you started outside Pomegr. To work in an ended session again, open it
 in the desktop app and select **Continue**. Pomegr never resumes a session by itself.
+
+### Idle sessions end unless their task is In progress
+
+The same two-minute rule covers every session Pomegr started in its terminal whose task is not
+**In progress**, for example a task you requeued to **Ready**. It covers a session you brought
+back with **Continue** too: that session ends once it has stayed idle for two minutes, unless the
+session it continues belongs to a task that is **In progress**. While you have a session's terminal
+open in the desktop app, Pomegr waits, and the two minutes start again after you close it. Pomegr
+never ends a session that is working, that runs a command, or whose state it does not know.
+
+### Deleting a task ends its sessions
+
+When you delete a task in the desktop app, Pomegr ends its idle sessions with it. If a session is still working,
+Pomegr asks first, with the same choices as for Done: **End session** or **Keep it running**. Either choice deletes the task.
+A session left running ends later, once it has stayed idle for two minutes with no command running. The same
+happens to the sessions of a task deleted on your phone, since only the desktop knows the sessions. Pomegr never
+ends a session that is working or whose state it does not know, or one you started outside Pomegr. To work in an ended
+session again, open it in the desktop app and select **Continue**.
 
 ### Read the task log
 
@@ -104,8 +123,8 @@ Pomegr merges no pull request, sends no task back, and marks no task done unless
 
 - **Merge method.** The repository default, unless you choose **Squash**, **Merge commit**, or **Rebase**.
   If the repository allows several methods, choose one.
-- **Merge mode.** **Merge when green** merges once CI passes. **Auto-merge when green** asks GitHub to merge
-  through the repository's auto-merge or merge queue, when its rules allow. The repository must allow
+- **Merge mode.** **Merge when green** merges once the review passed and the task's Complete when checks
+  hold, with any CI green. **Auto-merge when green** asks GitHub to merge through the repository's auto-merge or merge queue, when its rules allow. The repository must allow
   auto-merge.
 - **Delete branch after merge.** **Repository default** leaves it to GitHub's own setting. **Delete** deletes the
   task's branch after its pull request is merged, never the default branch or a fork's branch. **Keep** deletes
@@ -113,9 +132,11 @@ Pomegr merges no pull request, sends no task back, and marks no task done unless
 - **Reviewer.** The provider and model that review a task, and whether the reviewer must differ from the builder.
 - **Plans.** Markdown files in the repository that name the work to come.
 - **Guards.** How often a failed review may send one task back (3 when unset), and the provider usage percent at
-  which Aril starts nothing (the provider's own limit when unset). A task sent back continues its builder's session,
-  and the next review continues the reviewer's session, once those sessions have ended; a session that is still
-  running makes the task wait, and a session that cannot be continued is replaced by a new one.
+  which Aril starts nothing (the provider's own limit when unset). A task sent back stays linked to its builder's
+  session and returns to **In progress**, and Pomegr continues that session with the review's findings once it has
+  ended; a builder that is still running makes the task wait in **Review**. When the builder cannot be continued, the
+  task shows **Blocked** for you, and **Requeue** starts a new session with the findings. The next review continues
+  the reviewer's session the same way, or starts a new one when it cannot.
 
 To watch a review you started, open the task's **Terminal** tab in the desktop app. It lists the task's build and
 review sessions, and a review carries a **Review** label.
@@ -173,7 +194,7 @@ The reviewer checks the work and runs the repository's checks. It changes no cod
 does not move the task, and is instructed to report **pass** or **fail**. The verdict
 appears in the task modal's **Review** row, on the desktop and a paired device.
 The row reads **Review running…** until the reviewer reports, then **Passed** or
-**Failed** with the time and, for a failure, its reasons. It shows only verdicts
+**Rejected** with the time and, for a rejection, its reasons. It shows only verdicts
 from the task's current stay in Review. Starting a review is available only in
 the Windows desktop app.
 
@@ -181,6 +202,22 @@ Pomegr keeps the ID of every reviewer session with its task, and when it was lin
 until you delete the task. The **Sessions** list shows a reviewer session's task,
 marked **Review**, after the review ends and after the task is done or requeued. The
 task's **Terminal** tab still finds an ended review.
+
+You can find a review from its task, whether you or Aril started it:
+
+- **On the card.** A task that has had a review shows a line above its model line:
+  **Review running**, **Review passed**, **Review rejected**, or **Review, no verdict**.
+  Select it to open the newest review session.
+- **In the task window.** Under **Sessions**, each review session follows the builder
+  session, newest first, with its verdict and its state. After a send-back the earlier
+  rounds stay listed, such as **Review · round 1 · Rejected** under **Review · round 2 · Passed**.
+- **On the review session's page.** The header reads **Review** and the task ID, with
+  the verdict, and a **Builder session** link to the session it reviewed. In the desktop
+  app and on a paired phone, the task ID opens the task window.
+
+The verdict is what the reviewer reported to Pomegr with `report_review`, never what its
+terminal printed. **Running** means the review is the task's current one and has not
+reported yet; **No verdict** means that round ended without a report.
 
 ## Run the queue
 
@@ -199,8 +236,8 @@ wait for another, see [Parallel tasks and Runs after](tasks-order.md).
 ## What Pomegr does not do
 
 - It never attaches to, answers, or approves work in a running session. It ends a
-  session only when its task is done, or when the session has stayed idle for two minutes
-  and its task is in **Review**. It
+  session only when its task is done, when the session has stayed idle for two minutes
+  and its task is in **Review**, or when its task is deleted. It
   merges no pull request, and only you mark a task Done, after its acceptance passes.
 - It makes no AI judgment about whether work is complete. It compares the agent's
   report with observed facts. The own condition is the agent's judgment. An unknown

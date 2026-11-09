@@ -20,13 +20,17 @@ session linked. A scheduled task cannot start before its own time.
 2. A visible terminal window opens on the computer that runs Pomegr, in the repository
    or in the task's [worktree](tasks-order.md#worktrees). It runs Claude Code or Codex
    with the model and effort you chose. The task window closes.
-3. When the plugin in that session reports in, the task links to the session. The card
-   then shows **Open session** and the session's state.
+3. Pomegr links the task to the session it started, by the program it launched. The card
+   then shows **Open session** and the session's state. The link does not depend on
+   the plugin or on any hook, and it works however late the session first appears.
 
 - Starting never changes the task's state or its place in the queue. The card moves
   once the session links (see [Cards Pomegr moves](tasks-board.md#cards-pomegr-moves)).
-- Until the session links, or ten minutes pass, the task cannot start again, so you do
-  not get two sessions.
+- Until the session links, the task cannot start again while its terminal still runs,
+  so you do not get two sessions. A session that waits at a prompt, such as one that asks
+  you to trust the folder, links once it appears, however long that takes. This also holds
+  after you restart Pomegr. If its terminal closes with no session, the start failed: a
+  running queue pauses, and you can start the task again.
 - [What reaches the agent](tasks-agents.md#what-reaches-the-agent) lists what the
   session is told.
 

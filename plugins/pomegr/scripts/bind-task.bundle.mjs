@@ -28,11 +28,18 @@ function resolvePomegrDataRoot(options = {}) {
 }
 
 // shared/local-auth.mjs
+import { timingSafeEqual } from "node:crypto";
 var AGENT_QUERY_AUTH_HEADER = "x-pomegr-agent-authorization";
 var TOKEN_PATTERN = /^[A-Za-z0-9_-]{32,128}$/;
 function requireDesktopToken(value, code = "DESKTOP_AUTH_INVALID") {
   if (typeof value !== "string" || !TOKEN_PATTERN.test(value)) throw new Error(code);
   return value;
+}
+function tokensMatch(actual, expected) {
+  if (typeof actual !== "string" || typeof expected !== "string") return false;
+  const actualBytes = Buffer.from(actual);
+  const expectedBytes = Buffer.from(expected);
+  return actualBytes.length === expectedBytes.length && timingSafeEqual(actualBytes, expectedBytes);
 }
 
 // shared/agent-query-transport.mjs
@@ -93,6 +100,26 @@ async function inspectAgentQueryDescriptor({
     return descriptor ? { descriptor, status: "valid" } : { descriptor: null, status: "invalid" };
   } catch (error) {
     return { descriptor: null, status: error?.code === "ENOENT" ? "missing" : "unavailable" };
+  }
+}
+var AGENT_QUERY_DESCRIPTOR_WAIT_MS = 2e3;
+var DESCRIPTOR_POLL_MS = 100;
+var pause = (ms) => new Promise((resolve) => {
+  setTimeout(resolve, ms);
+});
+async function awaitAgentQueryDescriptor({
+  waitMs = AGENT_QUERY_DESCRIPTOR_WAIT_MS,
+  accept = (state) => state.status === "valid",
+  sleep = pause,
+  now = Date.now,
+  ...options
+} = {}) {
+  const deadline = now() + Math.max(0, waitMs);
+  for (; ; ) {
+    const state = await inspectAgentQueryDescriptor(options);
+    const left = deadline - now();
+    if (accept(state) || left <= 0) return state;
+    await sleep(Math.min(DESCRIPTOR_POLL_MS, left));
   }
 }
 function responseBufferLimit(response, maxBytes) {
@@ -162,12 +189,16 @@ var AGENT_TASK_WRITE_TIMEOUT_MS = 1e4;
 var AGENT_TASK_COMPLETE_TIMEOUT_MS = 25e3;
 var AGENT_TASK_UNAVAILABLE = "AGENT_QUERY_UNAVAILABLE";
 var AGENT_TASK_NO_ANSWER = "AGENT_QUERY_NO_ANSWER";
+var AGENT_TASK_NOT_CONNECTED = "AGENT_QUERY_NOT_CONNECTED";
+var AGENT_TASK_DESCRIPTOR_UNREADABLE = "AGENT_QUERY_DESCRIPTOR_UNREADABLE";
 var NOT_CONNECTED_CODES = /* @__PURE__ */ new Set(["ECONNREFUSED", "ENOTFOUND", "EAI_AGAIN", "EADDRNOTAVAIL", "ENETUNREACH", "EHOSTUNREACH", "UND_ERR_CONNECT_TIMEOUT"]);
 function neverConnected(error) {
   const cause = error?.cause;
   const codes = Array.isArray(cause?.errors) && cause.errors.length > 0 ? cause.errors.map((entry) => entry?.code) : [cause?.code ?? error?.code];
   return codes.every((code) => typeof code === "string" && NOT_CONNECTED_CODES.has(code));
 }
+var NOT_SENT = /* @__PURE__ */ Symbol("not sent");
+var sameDescriptor = (left, right) => Boolean(left && right && left.origin === right.origin && tokensMatch(left.token, right.token));
 function createAgentTaskWriter({
   dataRoot,
   descriptorPath,
@@ -176,19 +207,14 @@ function createAgentTaskWriter({
   statFn,
   timeoutMs,
   maxBytes = AGENT_QUERY_MAX_RESPONSE_BYTES,
-  maxBodyBytes = AGENT_TASK_MAX_BODY_BYTES
+  maxBodyBytes = AGENT_TASK_MAX_BODY_BYTES,
+  descriptorWaitMs = AGENT_QUERY_DESCRIPTOR_WAIT_MS,
+  sleep,
+  now
 } = {}) {
-  return async (pathname, body) => {
-    if (!AGENT_TASK_WRITE_PATHS.includes(pathname)) throw new Error("AGENT_QUERY_PATH_INVALID");
-    const payload = JSON.stringify(body);
-    if (typeof payload !== "string" || Buffer.byteLength(payload, "utf8") > maxBodyBytes) {
-      throw new Error("AGENT_QUERY_BODY_INVALID");
-    }
-    const descriptorState = await inspectAgentQueryDescriptor({ dataRoot, descriptorPath, readFileFn, statFn });
-    if (descriptorState.status === "invalid" || descriptorState.status === "unavailable") {
-      throw new Error("AGENT_QUERY_UNAVAILABLE");
-    }
-    const descriptor = descriptorState.descriptor;
+  const descriptorOptions = { dataRoot, descriptorPath, readFileFn, statFn };
+  const awaitDescriptor = (accept) => awaitAgentQueryDescriptor({ ...descriptorOptions, waitMs: descriptorWaitMs, accept, sleep, now });
+  async function send(pathname, payload, descriptor) {
     const origin = descriptor?.origin || AGENT_QUERY_DEFAULT_ORIGIN;
     const headers = {
       "content-type": "application/json",
@@ -208,7 +234,8 @@ function createAgentTaskWriter({
           signal: controller.signal
         });
       } catch (error) {
-        throw new Error(!controller.signal.aborted && neverConnected(error) ? AGENT_TASK_UNAVAILABLE : AGENT_TASK_NO_ANSWER);
+        if (!controller.signal.aborted && neverConnected(error)) return NOT_SENT;
+        throw new Error(AGENT_TASK_NO_ANSWER);
       }
       let parsed = null;
       try {
@@ -221,6 +248,26 @@ function createAgentTaskWriter({
     } finally {
       clearTimeout(timer);
     }
+  }
+  return async (pathname, body) => {
+    if (!AGENT_TASK_WRITE_PATHS.includes(pathname)) throw new Error("AGENT_QUERY_PATH_INVALID");
+    const payload = JSON.stringify(body);
+    if (typeof payload !== "string" || Buffer.byteLength(payload, "utf8") > maxBodyBytes) {
+      throw new Error("AGENT_QUERY_BODY_INVALID");
+    }
+    let state = await inspectAgentQueryDescriptor(descriptorOptions);
+    if (state.status === "invalid" || state.status === "unavailable") state = await awaitDescriptor((next) => next.status === "valid");
+    if (state.status === "invalid" || state.status === "unavailable") throw new Error(AGENT_TASK_DESCRIPTOR_UNREADABLE);
+    const tried = state.descriptor;
+    const answer = await send(pathname, payload, tried);
+    if (answer !== NOT_SENT) return answer;
+    const restored = await awaitDescriptor((next) => next.status === "valid" && !sameDescriptor(next.descriptor, tried));
+    if (restored.status !== "valid" || sameDescriptor(restored.descriptor, tried)) {
+      throw new Error(tried ? AGENT_TASK_UNAVAILABLE : AGENT_TASK_NOT_CONNECTED);
+    }
+    const retried = await send(pathname, payload, restored.descriptor);
+    if (retried === NOT_SENT) throw new Error(AGENT_TASK_UNAVAILABLE);
+    return retried;
   };
 }
 function defaultAgentQueryDataRoot(environment = process.env) {

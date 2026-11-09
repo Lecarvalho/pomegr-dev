@@ -2319,8 +2319,8 @@ var Doc = class {
     const lines = content.split("\n").filter((x) => x);
     const minIndent = Math.min(...lines.map((x) => x.length - x.trimStart().length));
     const dedented = lines.map((x) => x.slice(minIndent)).map((x) => " ".repeat(this.indent * 2) + x);
-    for (const line of dedented) {
-      this.content.push(line);
+    for (const line2 of dedented) {
+      this.content.push(line2);
     }
   }
   compile() {
@@ -20064,10 +20064,10 @@ var ReadBuffer = class {
     while (this._buffer) {
       const index = this._buffer.indexOf("\n");
       if (index === -1) return null;
-      const line = this._buffer.toString("utf8", 0, index).replace(/\r$/, "");
+      const line2 = this._buffer.toString("utf8", 0, index).replace(/\r$/, "");
       this._buffer = this._buffer.subarray(index + 1);
       try {
-        return deserializeMessage(line);
+        return deserializeMessage(line2);
       } catch (error51) {
         if (error51 instanceof SyntaxError) continue;
         throw error51;
@@ -20079,8 +20079,8 @@ var ReadBuffer = class {
     this._buffer = void 0;
   }
 };
-function deserializeMessage(line) {
-  return JSONRPCMessageSchema.parse(JSON.parse(line));
+function deserializeMessage(line2) {
+  return JSONRPCMessageSchema.parse(JSON.parse(line2));
 }
 function serializeMessage(message) {
   return JSON.stringify(message) + "\n";
@@ -20340,7 +20340,7 @@ var require_scope = /* @__PURE__ */ __commonJSMin(((exports) => {
     }
   };
   exports.ValueScopeName = ValueScopeName;
-  const line = (0, code_1._)`\n`;
+  const line2 = (0, code_1._)`\n`;
   var ValueScope = class extends Scope {
     constructor(opts) {
       super(opts);
@@ -20348,7 +20348,7 @@ var require_scope = /* @__PURE__ */ __commonJSMin(((exports) => {
       this._scope = opts.scope;
       this.opts = {
         ...opts,
-        _n: opts.lines ? line : code_1.nil
+        _n: opts.lines ? line2 : code_1.nil
       };
     }
     get() {
@@ -29166,6 +29166,55 @@ function toError(value) {
   return value instanceof Error ? value : new Error(String(value));
 }
 
+// shared/task-rework-report.mjs
+var REWORK_CAUSES = ["missed_wiring", "spec_gap", "wrong_behavior", "stale_instructions", "latent", "other"];
+var isReworkReference = (value) => typeof value === "string" && value.trim() === value && /^(?:T-|#)[1-9][0-9]*$/u.test(value) && Number.isSafeInteger(Number(value.slice(value.startsWith("T-") ? 2 : 1)));
+function validReportReworks(value) {
+  return Array.isArray(value) && value.length >= 1 && value.length <= 5 && value.every((entry) => entry !== null && typeof entry === "object" && !Array.isArray(entry) && Object.keys(entry).length === 2 && isReworkReference(entry.ref) && REWORK_CAUSES.includes(entry.cause));
+}
+
+// shared/task-report-input.mjs
+var TASK_REPORT_TOOLS = { complete_task: "complete", block_task: "block" };
+var TASK_REPORT_LINE_LIMIT = 200;
+var TASK_ID = /^T-[1-9][0-9]{0,8}$/u;
+var ONE_LINE = /^[^\u0000-\u001f\u007f-\u009f\u2028\u2029]+$/u;
+var HOOK_FIELDS = ["session_ref", "session_proof"];
+var FIELDS = { complete: ["task_id", "reworks", "attention"], block: ["task_id", "reworks", "reason"] };
+function line(value) {
+  if (typeof value !== "string") return null;
+  const text = value.trim();
+  return text.length >= 1 && text.length <= TASK_REPORT_LINE_LIMIT && ONE_LINE.test(text) ? text : null;
+}
+function taskReportInput(kind, input) {
+  if (!Object.hasOwn(FIELDS, kind) || input === null || typeof input !== "object" || Array.isArray(input)) return null;
+  if (Object.keys(input).some((key) => !FIELDS[kind].includes(key) && !HOOK_FIELDS.includes(key))) return null;
+  if (HOOK_FIELDS.some((key) => input[key] !== void 0 && (typeof input[key] !== "string" || input[key].length > 200))) return null;
+  const report = {};
+  if (input.task_id !== void 0) {
+    if (typeof input.task_id !== "string" || !TASK_ID.test(input.task_id)) return null;
+    report.taskId = input.task_id;
+  }
+  if (input.reworks !== void 0) {
+    if (!validReportReworks(input.reworks)) return null;
+    report.reworks = input.reworks.map(({ ref, cause }) => ({ ref, cause }));
+  }
+  if (kind === "complete" && input.attention !== void 0) {
+    const attention = line(input.attention);
+    if (attention === null) return null;
+    report.attention = attention;
+  }
+  if (kind === "block") {
+    const reason = line(input.reason);
+    if (reason === null) return null;
+    report.reason = reason;
+  }
+  return report;
+}
+
+// server/normalize/task-report-calls.mjs
+var PREFIXES = ["mcp__pomegr__", "mcp__plugin_pomegr_pomegr__"];
+var TASK_REPORT_MCP_TOOLS = new Map(Object.entries(TASK_REPORT_TOOLS).flatMap(([tool, kind]) => PREFIXES.map((prefix) => [`${prefix}${tool}`, kind])));
+
 // server/normalize/session-signals.mjs
 var AGENT_SIGNAL_TOOL = "report_agent_signal";
 var AGENT_SIGNAL_MCP_TOOL = `mcp__pomegr__${AGENT_SIGNAL_TOOL}`;
@@ -29529,7 +29578,7 @@ var AGENT_QUERY_TOOLS = Object.freeze({
     params: () => ({})
   }
 });
-function registerAgentQueryTools(server, { query, currentSessionRef = null } = {}) {
+function registerAgentQueryTools(server, { query, currentSessionRef = null, resolveCurrentSession = null } = {}) {
   const read = typeof query === "function" ? query : async () => {
     throw new Error("Pomegr monitor query client is unavailable");
   };
@@ -29541,8 +29590,13 @@ function registerAgentQueryTools(server, { query, currentSessionRef = null } = {
       inputSchema: definition.inputSchema,
       outputSchema: responseSchema,
       annotations: readAnnotations
-    }, async (input) => {
-      const resolved = definition.sessionScoped ? { ...input, session_ref: input.session_ref || hostSessionRef } : input;
+    }, async (input, extra) => {
+      let sessionRef = definition.sessionScoped ? input.session_ref || hostSessionRef : null;
+      if (definition.sessionScoped && !sessionRef && typeof resolveCurrentSession === "function") {
+        const bound = await Promise.resolve().then(() => resolveCurrentSession(input, extra, name)).catch(() => null);
+        sessionRef = sessionRefSchema.safeParse(bound).success ? bound : null;
+      }
+      const resolved = definition.sessionScoped ? { ...input, session_ref: sessionRef } : input;
       if (definition.sessionScoped && !resolved.session_ref) {
         return result(name, unavailableResponse("current_session_unavailable"));
       }
@@ -29582,11 +29636,18 @@ function resolvePomegrDataRoot(options = {}) {
 }
 
 // shared/local-auth.mjs
+import { timingSafeEqual } from "node:crypto";
 var AGENT_QUERY_AUTH_HEADER = "x-pomegr-agent-authorization";
 var TOKEN_PATTERN = /^[A-Za-z0-9_-]{32,128}$/;
 function requireDesktopToken(value, code = "DESKTOP_AUTH_INVALID") {
   if (typeof value !== "string" || !TOKEN_PATTERN.test(value)) throw new Error(code);
   return value;
+}
+function tokensMatch(actual, expected) {
+  if (typeof actual !== "string" || typeof expected !== "string") return false;
+  const actualBytes = Buffer.from(actual);
+  const expectedBytes = Buffer.from(expected);
+  return actualBytes.length === expectedBytes.length && timingSafeEqual(actualBytes, expectedBytes);
 }
 
 // shared/agent-query-transport.mjs
@@ -29647,6 +29708,26 @@ async function inspectAgentQueryDescriptor({
     return descriptor ? { descriptor, status: "valid" } : { descriptor: null, status: "invalid" };
   } catch (error51) {
     return { descriptor: null, status: error51?.code === "ENOENT" ? "missing" : "unavailable" };
+  }
+}
+var AGENT_QUERY_DESCRIPTOR_WAIT_MS = 2e3;
+var DESCRIPTOR_POLL_MS = 100;
+var pause = (ms) => new Promise((resolve) => {
+  setTimeout(resolve, ms);
+});
+async function awaitAgentQueryDescriptor({
+  waitMs = AGENT_QUERY_DESCRIPTOR_WAIT_MS,
+  accept = (state) => state.status === "valid",
+  sleep: sleep2 = pause,
+  now = Date.now,
+  ...options
+} = {}) {
+  const deadline = now() + Math.max(0, waitMs);
+  for (; ; ) {
+    const state = await inspectAgentQueryDescriptor(options);
+    const left = deadline - now();
+    if (accept(state) || left <= 0) return state;
+    await sleep2(Math.min(DESCRIPTOR_POLL_MS, left));
   }
 }
 function responseBufferLimit(response, maxBytes) {
@@ -29770,12 +29851,16 @@ var AGENT_TASK_WRITE_TIMEOUT_MS = 1e4;
 var AGENT_TASK_COMPLETE_TIMEOUT_MS = 25e3;
 var AGENT_TASK_UNAVAILABLE = "AGENT_QUERY_UNAVAILABLE";
 var AGENT_TASK_NO_ANSWER = "AGENT_QUERY_NO_ANSWER";
+var AGENT_TASK_NOT_CONNECTED = "AGENT_QUERY_NOT_CONNECTED";
+var AGENT_TASK_DESCRIPTOR_UNREADABLE = "AGENT_QUERY_DESCRIPTOR_UNREADABLE";
 var NOT_CONNECTED_CODES = /* @__PURE__ */ new Set(["ECONNREFUSED", "ENOTFOUND", "EAI_AGAIN", "EADDRNOTAVAIL", "ENETUNREACH", "EHOSTUNREACH", "UND_ERR_CONNECT_TIMEOUT"]);
 function neverConnected(error51) {
   const cause = error51?.cause;
   const codes = Array.isArray(cause?.errors) && cause.errors.length > 0 ? cause.errors.map((entry) => entry?.code) : [cause?.code ?? error51?.code];
   return codes.every((code) => typeof code === "string" && NOT_CONNECTED_CODES.has(code));
 }
+var NOT_SENT = /* @__PURE__ */ Symbol("not sent");
+var sameDescriptor = (left, right) => Boolean(left && right && left.origin === right.origin && tokensMatch(left.token, right.token));
 function createAgentTaskWriter({
   dataRoot,
   descriptorPath,
@@ -29784,19 +29869,14 @@ function createAgentTaskWriter({
   statFn,
   timeoutMs,
   maxBytes = AGENT_QUERY_MAX_RESPONSE_BYTES,
-  maxBodyBytes = AGENT_TASK_MAX_BODY_BYTES
+  maxBodyBytes = AGENT_TASK_MAX_BODY_BYTES,
+  descriptorWaitMs = AGENT_QUERY_DESCRIPTOR_WAIT_MS,
+  sleep: sleep2,
+  now
 } = {}) {
-  return async (pathname, body) => {
-    if (!AGENT_TASK_WRITE_PATHS.includes(pathname)) throw new Error("AGENT_QUERY_PATH_INVALID");
-    const payload = JSON.stringify(body);
-    if (typeof payload !== "string" || Buffer.byteLength(payload, "utf8") > maxBodyBytes) {
-      throw new Error("AGENT_QUERY_BODY_INVALID");
-    }
-    const descriptorState = await inspectAgentQueryDescriptor({ dataRoot, descriptorPath, readFileFn, statFn });
-    if (descriptorState.status === "invalid" || descriptorState.status === "unavailable") {
-      throw new Error("AGENT_QUERY_UNAVAILABLE");
-    }
-    const descriptor = descriptorState.descriptor;
+  const descriptorOptions = { dataRoot, descriptorPath, readFileFn, statFn };
+  const awaitDescriptor = (accept) => awaitAgentQueryDescriptor({ ...descriptorOptions, waitMs: descriptorWaitMs, accept, sleep: sleep2, now });
+  async function send(pathname, payload, descriptor) {
     const origin = descriptor?.origin || AGENT_QUERY_DEFAULT_ORIGIN;
     const headers = {
       "content-type": "application/json",
@@ -29816,7 +29896,8 @@ function createAgentTaskWriter({
           signal: controller.signal
         });
       } catch (error51) {
-        throw new Error(!controller.signal.aborted && neverConnected(error51) ? AGENT_TASK_UNAVAILABLE : AGENT_TASK_NO_ANSWER);
+        if (!controller.signal.aborted && neverConnected(error51)) return NOT_SENT;
+        throw new Error(AGENT_TASK_NO_ANSWER);
       }
       let parsed = null;
       try {
@@ -29829,21 +29910,58 @@ function createAgentTaskWriter({
     } finally {
       clearTimeout(timer);
     }
+  }
+  return async (pathname, body) => {
+    if (!AGENT_TASK_WRITE_PATHS.includes(pathname)) throw new Error("AGENT_QUERY_PATH_INVALID");
+    const payload = JSON.stringify(body);
+    if (typeof payload !== "string" || Buffer.byteLength(payload, "utf8") > maxBodyBytes) {
+      throw new Error("AGENT_QUERY_BODY_INVALID");
+    }
+    let state = await inspectAgentQueryDescriptor(descriptorOptions);
+    if (state.status === "invalid" || state.status === "unavailable") state = await awaitDescriptor((next) => next.status === "valid");
+    if (state.status === "invalid" || state.status === "unavailable") throw new Error(AGENT_TASK_DESCRIPTOR_UNREADABLE);
+    const tried = state.descriptor;
+    const answer = await send(pathname, payload, tried);
+    if (answer !== NOT_SENT) return answer;
+    const restored = await awaitDescriptor((next) => next.status === "valid" && !sameDescriptor(next.descriptor, tried));
+    if (restored.status !== "valid" || sameDescriptor(restored.descriptor, tried)) {
+      throw new Error(tried ? AGENT_TASK_UNAVAILABLE : AGENT_TASK_NOT_CONNECTED);
+    }
+    const retried = await send(pathname, payload, restored.descriptor);
+    if (retried === NOT_SENT) throw new Error(AGENT_TASK_UNAVAILABLE);
+    return retried;
   };
 }
 function defaultAgentQueryDataRoot(environment = process.env) {
   return resolvePomegrDataRoot({ environment, homeDir: os2.homedir() });
 }
 
-// shared/task-rework-report.mjs
-var REWORK_CAUSES = ["missed_wiring", "spec_gap", "wrong_behavior", "stale_instructions", "latent", "other"];
-var isReworkReference = (value) => typeof value === "string" && value.trim() === value && /^(?:T-|#)[1-9][0-9]*$/u.test(value) && Number.isSafeInteger(Number(value.slice(value.startsWith("T-") ? 2 : 1)));
-function reportReworkResults(value) {
-  return (Array.isArray(value) ? value : []).slice(0, 5).flatMap((entry) => {
-    if (!isReworkReference(entry?.ref)) return [];
-    if (["recorded", "exists"].includes(entry.status)) return [{ ref: entry.ref, status: entry.status }];
-    return entry.status === "refused" && ["invalid", "not_found", "limit"].includes(entry.reason) ? [{ ref: entry.ref, status: "refused", reason: entry.reason }] : [];
-  });
+// shared/agent-connection-text.mjs
+var FEATURE_OUTCOME = "so no feature was read or changed";
+var READ_OUTCOME = "so no task was read";
+var AGENT_TOOL_OUTCOME = {
+  add_task: "so no task was added",
+  get_task: READ_OUTCOME,
+  list_tasks: READ_OUTCOME,
+  update_task: "so no task was changed",
+  remove_task: "so no task was removed",
+  assign_task: "so no task was assigned",
+  unassign_task: "so no task was unassigned",
+  report_review: "so no verdict was recorded",
+  get_feature: FEATURE_OUTCOME,
+  create_feature: FEATURE_OUTCOME,
+  update_feature: FEATURE_OUTCOME,
+  delete_feature: FEATURE_OUTCOME
+};
+var AGENT_CONNECTION_MISSING = "No Pomegr desktop app is connected to this session: Pomegr is closed, or an older Pomegr copy removed its connection file. Tell the user to open Pomegr, or to restart it if it is open, and make this call again after that.";
+var AGENT_CONNECTION_UNREADABLE = "Pomegr's connection file for this session could not be read. Tell the user to restart the Pomegr desktop app, and make this call again after that.";
+var AGENT_REPORT_NOT_ARRIVED = {
+  report_review: "The task still waits for your verdict: tell the user your verdict, because it was not recorded."
+};
+function agentConnectionSentence(cause, tool) {
+  const sentence = cause === "unreadable" ? AGENT_CONNECTION_UNREADABLE : AGENT_CONNECTION_MISSING;
+  const report = AGENT_REPORT_NOT_ARRIVED[tool];
+  return report ? `${sentence} ${report}` : sentence;
 }
 
 // mcp/task-tools.mjs
@@ -29853,6 +29971,7 @@ var optionalReworks = external_exports.array(external_exports.object({
 }).strict()).min(1).max(5).optional();
 var TASK_ADD_PATH = "/api/agent/v1/tasks/add";
 var TASK_COMPLETE_PATH = "/api/agent/v1/tasks/complete";
+var COMPLETE_STOP_TEXT = "Now stop: end every background shell, watcher, or server this session started, and end your turn. Pomegr ends this session once it is idle; if a review sends the task back, Pomegr continues this session with the findings.";
 var TASK_BLOCK_PATH = "/api/agent/v1/tasks/block";
 var TASK_REMOVE_PATH = "/api/agent/v1/tasks/remove";
 var TASK_ASSIGN_PATH = "/api/agent/v1/tasks/assign";
@@ -29864,11 +29983,12 @@ var FEATURE_GET_PATH = "/api/agent/v1/tasks/feature-get";
 var FEATURE_CREATE_PATH = "/api/agent/v1/tasks/feature-create";
 var FEATURE_UPDATE_PATH = "/api/agent/v1/tasks/feature-update";
 var FEATURE_DELETE_PATH = "/api/agent/v1/tasks/feature-delete";
-var TASK_TOOL_INSTRUCTIONS = "Use add_task to put follow-up work on the current repository's Pomegr task board when the user asks for it; it only adds a task in the first column, it does not queue or start anything, and the repository is always the current session's. Use update_task to change a task of that board that has not started, such as to add a finding to its text, when the user asks for it or the work calls for it; the text you set replaces the stored text whole, so read the task with get_task first and set the whole text it should have. Use get_task to read one task of that board by its ID, and list_tasks to find tasks of the board by a part of their text, their state, their feature, or whether update_task can change them; both only read. Use remove_task only to delete a task this session added itself with add_task, such as a duplicate, while it has not started; it cannot be undone, and it never removes a task the user or another session added. When Pomegr started this session for a task, call complete_task when the task is complete, which puts the task in Review for the user, adding its attention line only when something in the finished work needs the user's attention, or block_task with a short reason when you cannot proceed; the latest report wins until the owner marks the task done, and only a session Pomegr started for the task or assigned to it may report. Use reworks to name 1-5 earlier tasks (T-n) or pull requests (#n) this task fixes or redoes, with a cause, only when this session knows it. A review session reports its verdict with report_review, never complete_task or block_task. A completion after a block moves the task to Review but keeps the owner-controlled queue hold. Use assign_task when the user asks this session to work on an existing board task it was not started for, such as to resume a task whose first session stopped, then report with complete_task or block_task, naming task_id if the session has more than one task; use unassign_task when the session stops working on that task. A feature groups tasks of the board and holds their shared context: a title, a description, and an app version. Use get_feature when a task of a feature needs that context; with no input it reads the feature of the task this session was started for. Use create_feature, update_feature, and delete_feature only when the user asks to change the board's features; delete_feature removes only a feature that has no task.";
+var TASK_TOOL_INSTRUCTIONS = "Use add_task to put follow-up work on the current repository's Pomegr task board when the user asks for it; it only adds a task in the first column, it does not queue or start anything, and the repository is always the current session's. Use update_task to change a task of that board that has not started, such as to add a finding to its text, when the user asks for it or the work calls for it; the text you set replaces the stored text whole, so read the task with get_task first and set the whole text it should have. Use get_task to read one task of that board by its ID, and list_tasks to find tasks of the board by a part of their text, their state, their feature, or whether update_task can change them; both only read. Use remove_task only to delete a task this session added itself with add_task, such as a duplicate, while it has not started; it cannot be undone, and it never removes a task the user or another session added. When Pomegr started this session for a task, call complete_task when the task is complete, which puts the task in Review for the user, adding its attention line only when something in the finished work needs the user's attention, or block_task with a short reason when you cannot proceed. Both answer at once, and Pomegr applies the report when it reads the call in this session's own transcript; the latest report wins until the owner marks the task done, only a session Pomegr started for the task or assigned to it may report, and a report Pomegr refuses is written to the task's log. Use reworks to name 1-5 earlier tasks (T-n) or pull requests (#n) this task fixes or redoes, with a cause, only when this session knows it. A review session reports its verdict with report_review, never complete_task or block_task. A completion after a block moves the task to Review but keeps the owner-controlled queue hold. Use assign_task when the user asks this session to work on an existing board task it was not started for, such as to resume a task whose first session stopped, then report with complete_task or block_task, naming task_id if the session has more than one task; use unassign_task when the session stops working on that task. A feature groups tasks of the board and holds their shared context: a title, a description, and an app version. Use get_feature when a task of a feature needs that context; with no input it reads the feature of the task this session was started for. Use create_feature, update_feature, and delete_feature only when the user asks to change the board's features; delete_feature removes only a feature that has no task.";
 var TASK_UNBOUND_TEXT = "Pomegr could not bind this call to the current session, so no task was added.";
 var TASK_UNAVAILABLE_TEXT = "Pomegr is unavailable, so no task was added.";
 var TASK_NO_ANSWER_TEXT = "Pomegr did not answer in time, so it is unknown whether the task was added. It may have been: do not assume it failed. Calling add_task again with exactly the same text and feature within a few minutes is safe and returns the same task instead of a second one; do not add it again with different wording.";
-var TASK_REPORT_NO_ANSWER_TEXT = "Pomegr did not answer in time, so it is unknown whether the report was recorded. It may have been: do not assume it failed. Retry the same report only if it still describes the work: the latest report wins until the owner marks the task done. A completion after a block does not clear the owner-controlled hold.";
+var COMPLETE_ACCEPTED_TEXT = "Completion accepted. Pomegr applies it when it reads this call in this session's transcript: the task goes to Review with the result of each checked condition, and the user marks it done. A report Pomegr refuses is written to the task's log for the user.";
+var BLOCK_ACCEPTED_TEXT = "Block accepted. Pomegr applies it when it reads this call in this session's transcript: the task becomes Blocked by agent, and the user will resolve it. A report Pomegr refuses is written to the task's log for the user.";
 var TASK_REMOVE_NO_ANSWER_TEXT = "Pomegr did not answer in time, so it is unknown whether the task was removed. It may have been: do not assume it failed. Calling remove_task once more with the same task ID is safe; if the answer is that no task was removed, the first call removed it or it could not be removed.";
 var TASK_ASSIGN_UNBOUND_TEXT = "Pomegr could not bind this call to the current session, so no task was assigned.";
 var TASK_UNASSIGN_UNBOUND_TEXT = "Pomegr could not bind this call to the current session, so no task was unassigned.";
@@ -29876,6 +29996,11 @@ var TASK_ASSIGN_NO_ANSWER_TEXT = "Pomegr did not answer in time, so it is unknow
 var TASK_UNASSIGN_NO_ANSWER_TEXT = "Pomegr did not answer in time, so it is unknown whether the task was unassigned. It may have been: do not assume it failed. Calling unassign_task once more with the same task ID is safe; if the answer is that this session is not assigned, the first call removed the assignment or there was none.";
 var repositoryUnavailableText = (outcome) => `Git has not confirmed the current session's repository, so ${outcome}. It does not mean the board is empty: Pomegr did not read it.`;
 var noAnswer = (error51) => error51 instanceof Error && error51.message === AGENT_TASK_NO_ANSWER;
+function unreachedText(error51, tool, fallback) {
+  const message = error51 instanceof Error ? error51.message : null;
+  const cause = message === AGENT_TASK_NOT_CONNECTED ? "missing" : message === AGENT_TASK_DESCRIPTOR_UNREADABLE ? "unreadable" : null;
+  return cause ? `Pomegr could not reach its desktop app, ${AGENT_TOOL_OUTCOME[tool]}. ${agentConnectionSentence(cause, tool)}` : fallback;
+}
 var CHECKS = ["pr_open", "tree_clean", "commit_on_branch", "pr_merged", "ci_passed", "user_validated"];
 var REASON_TEXT = {
   invalid: "Pomegr rejected the task as invalid, so no task was added.",
@@ -29945,13 +30070,8 @@ var CHECK_LABELS = {
 };
 var REPORT_REASON_TEXT = {
   invalid: "Pomegr rejected the report as invalid, so nothing was reported.",
-  not_found: "No Pomegr task is linked to this session, or the task named is not one of its tasks, so nothing was reported.",
-  task_required: "This session has more than one task, so nothing was reported. Call the tool again with task_id set to the task you are reporting on.",
-  already_reported: "This task no longer accepts reports, so nothing changed. Tell the user what remains and ask them to review the task on the board.",
-  stalled: "Pomegr marked this task Stalled, because it read this session as ended before any report, so nothing was reported. Only the user can change that, with Mark done or Requeue on the board. Tell the user what you finished, and do not report again.",
   unavailable: "Pomegr is unavailable, so nothing was reported."
 };
-var TASK_REPORT_UNBOUND_TEXT = "Pomegr could not bind this call to the current session, so nothing was reported.";
 var TASK_REVIEW_UNBOUND_TEXT = "Pomegr could not bind this call to the current session, so no verdict was recorded.";
 var TASK_REVIEW_NO_ANSWER_TEXT = "Pomegr did not answer in time, so it is unknown whether the verdict was recorded. It may have been: do not assume it failed. Retry the same verdict only if it still describes the review; an identical retry changes nothing.";
 var REVIEW_REASON_TEXT = {
@@ -29959,6 +30079,11 @@ var REVIEW_REASON_TEXT = {
   not_found: "This session is not the reviewer of a task, or that task ID is not one it reviews.",
   not_reviewable: "The task is no longer in Review, so no verdict was recorded.",
   unavailable: REPORT_REASON_TEXT.unavailable
+};
+var REVIEW_CAUSE_TEXT = {
+  not_linked: "No verdict was recorded: Pomegr has not linked this session to a task's review. If Pomegr started this session to review a task, its link failed: tell the user your verdict and ask them to start the review again from the task in Review. A session Pomegr did not start as a reviewer cannot report a verdict.",
+  wrong_task: "No verdict was recorded: this session reviews another task than the task_id named. Call report_review again without task_id, or with the task this session reviews.",
+  review_replaced: "No verdict was recorded: this session's review of the task is no longer the current one, because a send-back, a newer review, or the end of the task's stay in Review replaced it. Tell the user your verdict; only the task's current review can report."
 };
 var TASK_REMOVE_UNBOUND_TEXT = "Pomegr could not bind this call to the current session, so no task was removed.";
 var REMOVE_REASON_TEXT = {
@@ -29984,7 +30109,7 @@ var UNASSIGN_REASON_TEXT = {
   unavailable: "Pomegr is unavailable, so no task was unassigned."
 };
 var taskIdSchema = external_exports.string().regex(/^T-[1-9][0-9]{0,8}$/u, "Use a task ID such as T-12.");
-var ONE_LINE = /^[^\u0000-\u001f\u007f-\u009f\u2028\u2029]+$/u;
+var ONE_LINE2 = /^[^\u0000-\u001f\u007f-\u009f\u2028\u2029]+$/u;
 var TEXT_LINES = /^[^\u0000-\u0008\u000b\u000c\u000e-\u001f\u007f-\u009f\u2028\u2029]*$/u;
 var TASK_UPDATE_UNBOUND_TEXT = "Pomegr could not bind this call to the current session, so no task was changed.";
 var TASK_UPDATE_NO_ANSWER_TEXT = "Pomegr did not answer in time, so it is unknown whether the task was changed. It may have been: do not assume it failed. Calling update_task once more with exactly the same input is safe, because it sets the same values again.";
@@ -30019,10 +30144,10 @@ var FEATURE_CONFLICT_TEXT = {
 };
 var optionalTaskId = taskIdSchema.optional().describe("Optional. ID of the task, such as T-12. Needed only when this session has more than one task: the one Pomegr started it for and tasks assigned to it.");
 var featureReference = (optional2) => {
-  const schema = external_exports.string().trim().min(1).max(80).regex(ONE_LINE, "Use one line of plain text.");
+  const schema = external_exports.string().trim().min(1).max(80).regex(ONE_LINE2, "Use one line of plain text.");
   return optional2 ? schema.optional().describe("Optional. The feature's ID, such as feat-0123456789ab, or its exact title. Leave it out to read the feature of the task this session was started for.") : schema.describe("The feature's ID, such as feat-0123456789ab, or its exact title.");
 };
-var featureTitle = external_exports.string().trim().min(1).max(80).regex(ONE_LINE, "Use one line of plain text.");
+var featureTitle = external_exports.string().trim().min(1).max(80).regex(ONE_LINE2, "Use one line of plain text.");
 var featureDescription = external_exports.string().trim().max(2e3).regex(TEXT_LINES, "Use plain text.");
 var featureAppVersion = external_exports.string().trim().max(40).regex(/^[^\u0000-\u001f\u007f-\u009f\u2028\u2029]*$/u, "Use one line of plain text.");
 var clearable = (value) => value === void 0 ? void 0 : value === "" ? null : value;
@@ -30085,7 +30210,7 @@ function resolveCodexCallSession(meta3) {
 function result2(text, isError) {
   return { ...isError ? { isError: true } : {}, content: [{ type: "text", text }] };
 }
-function registerTaskTools(server, { resolveSession, post, hookBound = false }) {
+function registerTaskTools(server, { resolveSession, post, hookBound = false, reportSent = null }) {
   server.registerTool("add_task", {
     title: "Add a Pomegr task",
     description: "Add a task to the current repository's Pomegr board, in the first column, not queued. It does not start any session. Set runs_after to the tasks of the board it must wait for: it never starts until each is Done or deleted. Adding the same text to the same feature again within a few minutes returns the task already added instead of a second one. The repository and session are bound by the host; there is no repository or path input.",
@@ -30098,7 +30223,7 @@ function registerTaskTools(server, { resolveSession, post, hookBound = false }) 
     try {
       answer = await post(TASK_ADD_PATH, buildAddTaskBody(ref, input));
     } catch (error51) {
-      return result2(noAnswer(error51) ? TASK_NO_ANSWER_TEXT : TASK_UNAVAILABLE_TEXT, true);
+      return result2(noAnswer(error51) ? TASK_NO_ANSWER_TEXT : unreachedText(error51, "add_task", TASK_UNAVAILABLE_TEXT), true);
     }
     if (answer && answer.ok === true && typeof answer.taskId === "string" && /^T-\d{1,9}$/u.test(answer.taskId)) {
       return result2(`Task ${answer.taskId} added to the board, not queued.`, false);
@@ -30112,8 +30237,8 @@ function registerTaskTools(server, { resolveSession, post, hookBound = false }) 
     let answer;
     try {
       answer = await post(path3, { sessionRef: ref, ...body });
-    } catch {
-      return result2(READ_REASON_TEXT.unavailable, true);
+    } catch (error51) {
+      return result2(unreachedText(error51, tool, READ_REASON_TEXT.unavailable), true);
     }
     if (answer && answer.ok === true) {
       const text2 = done(answer);
@@ -30142,7 +30267,7 @@ function registerTaskTools(server, { resolveSession, post, hookBound = false }) 
     title: "List Pomegr tasks",
     description: "List the tasks of the current repository's Pomegr board, in board order, with the same fields as get_task. It returns at most 100 tasks, and cuts each text at 300 characters; read a cut task whole with get_task. Narrow the list with query (a part of the text or the own condition, any case), state, feature (its exact title), or editable (true for the tasks update_task can change). It changes nothing. The repository and session are bound by the host.",
     inputSchema: external_exports.object({
-      query: external_exports.string().trim().min(1).max(80).regex(ONE_LINE, "Use one line of plain text.").optional().describe("Optional. Lists only the tasks whose text or own condition holds this, in any case."),
+      query: external_exports.string().trim().min(1).max(80).regex(ONE_LINE2, "Use one line of plain text.").optional().describe("Optional. Lists only the tasks whose text or own condition holds this, in any case."),
       state: external_exports.enum(TASK_STATES).optional().describe("Optional. Lists only the tasks in this state."),
       feature: featureTitle.optional().describe("Optional. Lists only the tasks of the feature with this exact title."),
       editable: external_exports.boolean().optional().describe("Optional. True lists only the tasks update_task can change, false only the others."),
@@ -30181,7 +30306,7 @@ function registerTaskTools(server, { resolveSession, post, hookBound = false }) 
     try {
       answer = await post(TASK_UPDATE_PATH, buildUpdateTaskBody(ref, input));
     } catch (error51) {
-      return result2(noAnswer(error51) ? TASK_UPDATE_NO_ANSWER_TEXT : UPDATE_REASON_TEXT.unavailable, true);
+      return result2(noAnswer(error51) ? TASK_UPDATE_NO_ANSWER_TEXT : unreachedText(error51, "update_task", UPDATE_REASON_TEXT.unavailable), true);
     }
     if (answer && answer.ok === true) return result2(`Task ${input.task_id} updated.`, false);
     const text = answer && answer.ok === false && typeof answer.reason === "string" && Object.hasOwn(UPDATE_REASON_TEXT, answer.reason) ? UPDATE_REASON_TEXT[answer.reason] : UPDATE_REASON_TEXT.unavailable;
@@ -30202,7 +30327,7 @@ function registerTaskTools(server, { resolveSession, post, hookBound = false }) 
     try {
       answer = await post(TASK_REMOVE_PATH, { sessionRef: ref, taskId: input.task_id });
     } catch (error51) {
-      return result2(noAnswer(error51) ? TASK_REMOVE_NO_ANSWER_TEXT : REMOVE_REASON_TEXT.unavailable, true);
+      return result2(noAnswer(error51) ? TASK_REMOVE_NO_ANSWER_TEXT : unreachedText(error51, "remove_task", REMOVE_REASON_TEXT.unavailable), true);
     }
     if (answer && answer.ok === true) return result2(`Task ${input.task_id} removed from the board.`, false);
     const text = answer && answer.ok === false && typeof answer.reason === "string" && Object.hasOwn(REMOVE_REASON_TEXT, answer.reason) ? REMOVE_REASON_TEXT[answer.reason] : REMOVE_REASON_TEXT.unavailable;
@@ -30215,7 +30340,7 @@ function registerTaskTools(server, { resolveSession, post, hookBound = false }) 
     try {
       answer = await post(path3, { sessionRef: ref, taskId: input.task_id });
     } catch (error51) {
-      return result2(noAnswer(error51) ? noAnswerText : reasons.unavailable, true);
+      return result2(noAnswer(error51) ? noAnswerText : unreachedText(error51, tool, reasons.unavailable), true);
     }
     if (answer && answer.ok === true) return result2(done(input.task_id), false);
     const text = answer && answer.ok === false && typeof answer.reason === "string" && Object.hasOwn(reasons, answer.reason) ? reasons[answer.reason] : reasons.unavailable;
@@ -30253,56 +30378,40 @@ function registerTaskTools(server, { resolveSession, post, hookBound = false }) 
     UNASSIGN_REASON_TEXT,
     (taskId) => `Task ${taskId} unassigned from this session.`
   ));
-  const report = async (path3, ref, body, done) => {
-    if (typeof ref !== "string" || !ref) return result2(TASK_REPORT_UNBOUND_TEXT, true);
-    let answer;
-    try {
-      answer = await post(path3, { sessionRef: ref, ...body });
-    } catch (error51) {
-      return result2(noAnswer(error51) ? TASK_REPORT_NO_ANSWER_TEXT : REPORT_REASON_TEXT.unavailable, true);
-    }
-    if (answer && answer.ok === true) {
-      const text2 = done(answer);
-      if (text2) {
-        const reworks = reportReworkResults(answer.reworks).map((entry) => `${entry.ref} ${entry.status === "refused" ? `refused (${entry.reason})` : entry.status === "exists" ? "already existed" : "recorded"}`);
-        return result2(text2 + (reworks.length ? ` Reworks: ${reworks.join("; ")}.` : ""), false);
-      }
-    }
-    const text = answer && answer.ok === false && typeof answer.reason === "string" && Object.hasOwn(REPORT_REASON_TEXT, answer.reason) ? REPORT_REASON_TEXT[answer.reason] : REPORT_REASON_TEXT.unavailable;
-    return result2(text, true);
+  const accepted = (kind, input, extra) => {
+    const report = taskReportInput(kind, input);
+    if (report === null) return result2(REPORT_REASON_TEXT.invalid, true);
+    const sent = (async () => {
+      const ref = await resolveSession(input, extra, kind === "complete" ? "complete_task" : "block_task");
+      if (typeof ref !== "string" || !ref) return;
+      await post(kind === "complete" ? TASK_COMPLETE_PATH : TASK_BLOCK_PATH, {
+        sessionRef: ref,
+        ...report.taskId === void 0 ? {} : { taskId: report.taskId },
+        ...kind === "complete" ? report.attention === void 0 ? {} : { attention: report.attention } : { reason: report.reason },
+        ...report.reworks === void 0 ? {} : { reworks: report.reworks }
+      });
+    })().catch(() => {
+    });
+    reportSent?.(sent);
+    return result2(kind === "complete" ? `${COMPLETE_ACCEPTED_TEXT} ${COMPLETE_STOP_TEXT}` : BLOCK_ACCEPTED_TEXT, false);
   };
   server.registerTool("complete_task", {
     title: "Report the Pomegr task complete",
-    description: "Report that the task Pomegr started this session for, or a task assigned to this session, is complete. Pomegr verifies the checked conditions and records each result. The task goes to Review; only the user marks it done. Set attention only when the work is finished but something needs the user's attention, such as a choice you made for them or a follow-up they must do; leave it out otherwise. An initial completion puts the task in Review and does not hold the queue; when the work that follows must not start, call block_task instead. A completion after a block records fresh check results and moves the task to Review. An earlier block still holds the queue until the owner chooses Mark done or Requeue. The session is bound by the host, and the latest report wins until the owner marks the task done. Name task_id only when this session has more than one task. The tool has no summary or result field: a plain completion is a call with no input. A denied call changed nothing, so one retry with only the allowed fields is safe. Use reworks to name 1-5 earlier tasks (T-n) or pull requests (#n) this task fixes or redoes, with a cause, only when this session knows it.",
+    description: "Report that the task Pomegr started this session for, or a task assigned to this session, is complete. The call answers at once and changes nothing by itself: Pomegr applies it when it reads this call in this session's own transcript, verifies the checked conditions then, and records each result; a report made before Pomegr linked the session to its task is applied once the link exists. The task goes to Review; only the user marks it done. Set attention only when the work is finished but something needs the user's attention, such as a choice you made for them or a follow-up they must do; leave it out otherwise. An initial completion puts the task in Review and does not hold the queue; when the work that follows must not start, call block_task instead. A completion after a block records fresh check results and moves the task to Review. An earlier block still holds the queue until the owner chooses Mark done or Requeue. The latest report wins until the owner marks the task done; a report Pomegr refuses, such as one for a task that is done or not this session's, is written to the task's log for the user. Name task_id only when this session has more than one task. The tool has no summary or result field: a plain completion is a call with no input. A call answered invalid changed nothing, so one retry with only the allowed fields is safe. Use reworks to name 1-5 earlier tasks (T-n) or pull requests (#n) this task fixes or redoes, with a cause, only when this session knows it.",
     inputSchema: external_exports.object({
       task_id: optionalTaskId,
       reworks: optionalReworks,
-      attention: external_exports.string().trim().min(1).max(200).regex(ONE_LINE, "Use one line of plain text.").optional().describe("Optional. What in the finished work needs the user's attention, in one line of at most 200 characters. No secrets, commands, or output."),
+      attention: external_exports.string().trim().min(1).max(200).regex(ONE_LINE2, "Use one line of plain text.").optional().describe("Optional. What in the finished work needs the user's attention, in one line of at most 200 characters. No secrets, commands, or output."),
       ...hookFields(hookBound)
     }).strict(),
     annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false }
-  }, async (input, extra) => report(TASK_COMPLETE_PATH, await resolveSession(input, extra, "complete_task"), { ...input.task_id === void 0 ? {} : { taskId: input.task_id }, ...input.attention === void 0 ? {} : { attention: input.attention }, ...input.reworks === void 0 ? {} : { reworks: input.reworks } }, (answer) => {
-    if (answer.state === "done") return "Task reported complete. Pomegr marked it done.";
-    if (!["needs_review", "blocked"].includes(answer.state)) return null;
-    if (answer.state === "blocked" && !Array.isArray(answer.results)) return null;
-    const open = (Array.isArray(answer.results) ? answer.results : []).filter((entry) => entry && entry.passed === false && Object.hasOwn(CHECK_LABELS, entry.check));
-    const labels = (unavailable) => open.filter((entry) => entry.unavailable === true === unavailable).map((entry) => CHECK_LABELS[entry.check]).join(", ");
-    const failed = labels(false);
-    const unverified = labels(true);
-    const held = answer.ownerHold === true || answer.state === "blocked";
-    const holdText = "The task is in Review. An earlier block still needs the user to choose Mark done or Requeue; the queue state is unchanged.";
-    if (open.length === 0 && held) return `Task reported complete. ${holdText}`;
-    if (open.length === 0) return input.attention !== void 0 ? "Task reported complete. Pomegr put it in Review for the user's attention; the user marks it done." : "Task reported complete. Pomegr put it in Review; the user marks it done.";
-    const parts = [failed && `these conditions did not pass: ${failed}`, unverified && `Pomegr could not verify: ${unverified} (it had no current evidence, which does not mean the condition failed)`].filter(Boolean);
-    const ciText = open.some((entry) => entry.check === "ci_passed" && entry.unavailable === true) ? " CI needs a finished check result for this checkout's current commit; pending, missing, or mismatched evidence cannot verify it." : "";
-    return `Task reported complete, but ${parts.join("; and ")}.${ciText} ${held ? holdText : "The task now needs the user's review."}`;
-  }));
+  }, async (input, extra) => accepted("complete", input, extra));
   server.registerTool("report_review", {
     title: "Report the Pomegr task review",
     description: "For a review session Pomegr started for a task in Review, report the verdict once after running the repository's checks: pass, or fail with one-line reasons stating met, unmet, or unknown for each repository rule that failed. The verdict changes no task state; only the user decides what happens next. It never edits the board. A denied call changed nothing.",
     inputSchema: external_exports.object({
       verdict: external_exports.enum(["pass", "fail"]),
-      reasons: external_exports.array(external_exports.string().trim().min(1).max(200).regex(ONE_LINE, "Use one line of plain text.")).min(1).max(10).optional(),
+      reasons: external_exports.array(external_exports.string().trim().min(1).max(200).regex(ONE_LINE2, "Use one line of plain text.")).min(1).max(10).optional(),
       task_id: optionalTaskId,
       ...hookFields(hookBound)
     }).strict().refine(
@@ -30322,10 +30431,11 @@ function registerTaskTools(server, { resolveSession, post, hookBound = false }) 
         ...input.task_id === void 0 ? {} : { taskId: input.task_id }
       });
     } catch (error51) {
-      return result2(noAnswer(error51) ? TASK_REVIEW_NO_ANSWER_TEXT : REVIEW_REASON_TEXT.unavailable, true);
+      return result2(noAnswer(error51) ? TASK_REVIEW_NO_ANSWER_TEXT : unreachedText(error51, "report_review", REVIEW_REASON_TEXT.unavailable), true);
     }
     if (answer && answer.ok === true) return result2(input.verdict === "pass" ? "Review reported: passed." : `Review reported: failed, with ${input.reasons.length} ${input.reasons.length === 1 ? "reason" : "reasons"}.`, false);
-    const text = answer && answer.ok === false && typeof answer.reason === "string" && Object.hasOwn(REVIEW_REASON_TEXT, answer.reason) ? REVIEW_REASON_TEXT[answer.reason] : REVIEW_REASON_TEXT.unavailable;
+    const refused = answer && answer.ok === false && typeof answer.reason === "string" && Object.hasOwn(REVIEW_REASON_TEXT, answer.reason);
+    const text = !refused ? REVIEW_REASON_TEXT.unavailable : answer.reason === "not_found" && typeof answer.cause === "string" && Object.hasOwn(REVIEW_CAUSE_TEXT, answer.cause) ? REVIEW_CAUSE_TEXT[answer.cause] : REVIEW_REASON_TEXT[answer.reason];
     return result2(text, true);
   });
   const feature = async (tool, path3, input, extra, body, done) => {
@@ -30335,7 +30445,7 @@ function registerTaskTools(server, { resolveSession, post, hookBound = false }) 
     try {
       answer = await post(path3, { sessionRef: ref, ...body });
     } catch (error51) {
-      return result2(noAnswer(error51) && tool !== "get_feature" ? FEATURE_NO_ANSWER_TEXT : FEATURE_REASON_TEXT.unavailable, true);
+      return result2(noAnswer(error51) && tool !== "get_feature" ? FEATURE_NO_ANSWER_TEXT : unreachedText(error51, tool, FEATURE_REASON_TEXT.unavailable), true);
     }
     if (answer && answer.ok === true) {
       const text2 = done(answer);
@@ -30399,20 +30509,15 @@ function registerTaskTools(server, { resolveSession, post, hookBound = false }) 
   }, async (input, extra) => feature("delete_feature", FEATURE_DELETE_PATH, input, extra, { feature: input.feature }, () => "Feature deleted."));
   server.registerTool("block_task", {
     title: "Report the Pomegr task blocked",
-    description: "Report that you cannot continue the task Pomegr started this session for, or a task assigned to this session, with a short reason the user will read. The task becomes Blocked by agent and holds the queue until the user resolves the hold. The session is bound by the host. The latest report wins until the owner marks the task done; a later completion does not clear the owner-controlled hold. Name task_id only when this session has more than one task. Use reworks to name 1-5 earlier tasks (T-n) or pull requests (#n) this task fixes or redoes, with a cause, only when this session knows it.",
+    description: "Report that you cannot continue the task Pomegr started this session for, or a task assigned to this session, with a short reason the user will read. The call answers at once and changes nothing by itself: Pomegr applies it when it reads this call in this session's own transcript, and a report made before Pomegr linked the session to its task is applied once the link exists. The task becomes Blocked by agent and holds the queue until the user resolves the hold. The latest report wins until the owner marks the task done; a later completion does not clear the owner-controlled hold. A report Pomegr refuses, such as one for a task that is done or not this session's, is written to the task's log for the user. Name task_id only when this session has more than one task. Use reworks to name 1-5 earlier tasks (T-n) or pull requests (#n) this task fixes or redoes, with a cause, only when this session knows it.",
     inputSchema: external_exports.object({
       task_id: optionalTaskId,
       reworks: optionalReworks,
-      reason: external_exports.string().trim().min(1).max(200).regex(ONE_LINE, "Use one line of plain text.").describe("Why the task cannot continue, in one line of at most 200 characters. No secrets, commands, or output."),
+      reason: external_exports.string().trim().min(1).max(200).regex(ONE_LINE2, "Use one line of plain text.").describe("Why the task cannot continue, in one line of at most 200 characters. No secrets, commands, or output."),
       ...hookFields(hookBound)
     }).strict(),
     annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false }
-  }, async (input, extra) => report(
-    TASK_BLOCK_PATH,
-    await resolveSession(input, extra, "block_task"),
-    { ...input.task_id === void 0 ? {} : { taskId: input.task_id }, reason: input.reason, ...input.reworks === void 0 ? {} : { reworks: input.reworks } },
-    (answer) => answer.state === "blocked" ? "Task reported as blocked. The user will resolve it." : null
-  ));
+  }, async (input, extra) => accepted("block", input, extra));
 }
 
 // mcp/server.mjs
@@ -30442,7 +30547,7 @@ var signalAnnotations = {
 };
 function buildPomegrMcpServer(options = {}) {
   const server = new McpServer(
-    { name: "pomegr", version: "0.9.19" },
+    { name: "pomegr", version: "0.9.20" },
     { instructions: "Use report_agent_signal for the calling agent, report_session_signal for the overall session, report_session_progress for bounded session progress, and report_task_signal for a durable execution-task outcome. A later report replaces the same scope. Use clear_agent_signal, clear_session_signal, or clear_session_progress when the corresponding current state is no longer meaningful. " + AGENT_QUERY_INSTRUCTIONS + " " + TASK_TOOL_INSTRUCTIONS }
   );
   server.registerTool(

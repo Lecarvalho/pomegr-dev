@@ -832,10 +832,10 @@ function mergeDefs(...defs) {
 function cloneDef(schema) {
   return mergeDefs(schema._zod.def);
 }
-function getElementAtPath(obj, path3) {
-  if (!path3)
+function getElementAtPath(obj, path4) {
+  if (!path4)
     return obj;
-  return path3.reduce((acc, key) => acc?.[key], obj);
+  return path4.reduce((acc, key) => acc?.[key], obj);
 }
 function promiseAllObject(promisesObj) {
   const keys = Object.keys(promisesObj);
@@ -1244,11 +1244,11 @@ function explicitlyAborted(x, startIndex = 0) {
   }
   return false;
 }
-function prefixIssues(path3, issues) {
+function prefixIssues(path4, issues) {
   return issues.map((iss) => {
     var _a3;
     (_a3 = iss).path ?? (_a3.path = []);
-    iss.path.unshift(path3);
+    iss.path.unshift(path4);
     return iss;
   });
 }
@@ -1395,16 +1395,16 @@ function flattenError(error51, mapper = (issue2) => issue2.message) {
 }
 function formatError(error51, mapper = (issue2) => issue2.message) {
   const fieldErrors = { _errors: [] };
-  const processError = (error52, path3 = []) => {
+  const processError = (error52, path4 = []) => {
     for (const issue2 of error52.issues) {
       if (issue2.code === "invalid_union" && issue2.errors.length) {
-        issue2.errors.map((issues) => processError({ issues }, [...path3, ...issue2.path]));
+        issue2.errors.map((issues) => processError({ issues }, [...path4, ...issue2.path]));
       } else if (issue2.code === "invalid_key") {
-        processError({ issues: issue2.issues }, [...path3, ...issue2.path]);
+        processError({ issues: issue2.issues }, [...path4, ...issue2.path]);
       } else if (issue2.code === "invalid_element") {
-        processError({ issues: issue2.issues }, [...path3, ...issue2.path]);
+        processError({ issues: issue2.issues }, [...path4, ...issue2.path]);
       } else {
-        const fullpath = [...path3, ...issue2.path];
+        const fullpath = [...path4, ...issue2.path];
         if (fullpath.length === 0) {
           fieldErrors._errors.push(mapper(issue2));
         } else {
@@ -1431,17 +1431,17 @@ function formatError(error51, mapper = (issue2) => issue2.message) {
 }
 function treeifyError(error51, mapper = (issue2) => issue2.message) {
   const result3 = { errors: [] };
-  const processError = (error52, path3 = []) => {
+  const processError = (error52, path4 = []) => {
     var _a3, _b;
     for (const issue2 of error52.issues) {
       if (issue2.code === "invalid_union" && issue2.errors.length) {
-        issue2.errors.map((issues) => processError({ issues }, [...path3, ...issue2.path]));
+        issue2.errors.map((issues) => processError({ issues }, [...path4, ...issue2.path]));
       } else if (issue2.code === "invalid_key") {
-        processError({ issues: issue2.issues }, [...path3, ...issue2.path]);
+        processError({ issues: issue2.issues }, [...path4, ...issue2.path]);
       } else if (issue2.code === "invalid_element") {
-        processError({ issues: issue2.issues }, [...path3, ...issue2.path]);
+        processError({ issues: issue2.issues }, [...path4, ...issue2.path]);
       } else {
-        const fullpath = [...path3, ...issue2.path];
+        const fullpath = [...path4, ...issue2.path];
         if (fullpath.length === 0) {
           result3.errors.push(mapper(issue2));
           continue;
@@ -1473,8 +1473,8 @@ function treeifyError(error51, mapper = (issue2) => issue2.message) {
 }
 function toDotPath(_path) {
   const segs = [];
-  const path3 = _path.map((seg) => typeof seg === "object" ? seg.key : seg);
-  for (const seg of path3) {
+  const path4 = _path.map((seg) => typeof seg === "object" ? seg.key : seg);
+  for (const seg of path4) {
     if (typeof seg === "number")
       segs.push(`[${seg}]`);
     else if (typeof seg === "symbol")
@@ -2318,8 +2318,8 @@ var Doc = class {
     const lines = content.split("\n").filter((x) => x);
     const minIndent = Math.min(...lines.map((x) => x.length - x.trimStart().length));
     const dedented = lines.map((x) => x.slice(minIndent)).map((x) => " ".repeat(this.indent * 2) + x);
-    for (const line of dedented) {
-      this.content.push(line);
+    for (const line2 of dedented) {
+      this.content.push(line2);
     }
   }
   compile() {
@@ -14166,13 +14166,13 @@ function resolveRef(ref, ctx) {
   if (!ref.startsWith("#")) {
     throw new Error("External $ref is not supported, only local refs (#/...) are allowed");
   }
-  const path3 = ref.slice(1).split("/").filter(Boolean);
-  if (path3.length === 0) {
+  const path4 = ref.slice(1).split("/").filter(Boolean);
+  if (path4.length === 0) {
     return ctx.rootSchema;
   }
   const defsKey = ctx.version === "draft-2020-12" ? "$defs" : "definitions";
-  if (path3[0] === defsKey) {
-    const key = path3[1];
+  if (path4[0] === defsKey) {
+    const key = path4[1];
     if (!key || !ctx.defs[key]) {
       throw new Error(`Reference not found: ${ref}`);
     }
@@ -18140,9 +18140,9 @@ var rev2026Codec = {
     });
     const parsed = buildSchemas2026().RequestMetaEnvelopeSchema.safeParse(meta3);
     if (!parsed.success) for (const issue2 of parsed.error.issues) {
-      const path3 = issue2.path.map(String);
-      const key = path3.length > 0 ? path3.join(".") : "_meta";
-      if (path3.length === 1 && issues.some((existing) => existing.key === key && existing.problem === "missing")) continue;
+      const path4 = issue2.path.map(String);
+      const key = path4.length > 0 ? path4.join(".") : "_meta";
+      if (path4.length === 1 && issues.some((existing) => existing.key === key && existing.problem === "missing")) continue;
       issues.push({
         key,
         problem: issue2.message
@@ -18463,29 +18463,29 @@ var PERMITTED_X_MCP_HEADER_TYPES = /* @__PURE__ */ new Set([
 function scanXMcpHeaderDeclarations(inputSchema) {
   const declarations = [];
   const seenLower = /* @__PURE__ */ new Map();
-  const visit = (node, path3, reachable) => {
+  const visit = (node, path4, reachable) => {
     if (node === null || typeof node !== "object") return void 0;
     const schema = node;
     if (X_MCP_HEADER_KEY in schema) {
-      if (!reachable || path3.length === 0) return `${pathName(path3)}: x-mcp-header is only permitted on properties statically reachable via a chain of 'properties' keys (not under items, additionalProperties, oneOf/anyOf/allOf/not, if/then/else, or $ref)`;
+      if (!reachable || path4.length === 0) return `${pathName(path4)}: x-mcp-header is only permitted on properties statically reachable via a chain of 'properties' keys (not under items, additionalProperties, oneOf/anyOf/allOf/not, if/then/else, or $ref)`;
       const raw = schema[X_MCP_HEADER_KEY];
-      if (typeof raw !== "string" || raw.length === 0) return `${pathName(path3)}: x-mcp-header MUST be a non-empty string`;
-      if (!RFC9110_TOKEN.test(raw)) return `${pathName(path3)}: x-mcp-header '${raw}' is not a valid RFC 9110 token (no spaces, control characters or HTTP delimiters)`;
+      if (typeof raw !== "string" || raw.length === 0) return `${pathName(path4)}: x-mcp-header MUST be a non-empty string`;
+      if (!RFC9110_TOKEN.test(raw)) return `${pathName(path4)}: x-mcp-header '${raw}' is not a valid RFC 9110 token (no spaces, control characters or HTTP delimiters)`;
       const type = typeof schema.type === "string" ? schema.type : void 0;
-      if (type === void 0 || !PERMITTED_X_MCP_HEADER_TYPES.has(type)) return `${pathName(path3)}: x-mcp-header is only permitted on primitive-typed properties (string, integer, boolean); got ${type ?? "<none>"}`;
+      if (type === void 0 || !PERMITTED_X_MCP_HEADER_TYPES.has(type)) return `${pathName(path4)}: x-mcp-header is only permitted on primitive-typed properties (string, integer, boolean); got ${type ?? "<none>"}`;
       const lower = raw.toLowerCase();
       const prior = seenLower.get(lower);
       if (prior !== void 0) return `x-mcp-header '${raw}' is not case-insensitively unique (also declared as '${prior}')`;
       seenLower.set(lower, raw);
       declarations.push({
-        path: path3,
+        path: path4,
         headerName: raw,
         type
       });
     }
     const properties = schema.properties;
     if (properties !== null && typeof properties === "object") for (const [key, child] of Object.entries(properties)) {
-      const fault$1 = visit(child, [...path3, key], reachable);
+      const fault$1 = visit(child, [...path4, key], reachable);
       if (fault$1 !== void 0) return fault$1;
     }
     for (const k of NON_REACHABLE_SUBSCHEMA_KEYWORDS) {
@@ -18493,7 +18493,7 @@ function scanXMcpHeaderDeclarations(inputSchema) {
       if (sub === void 0) continue;
       const branches = Array.isArray(sub) ? sub : sub !== null && typeof sub === "object" && OBJECT_VALUED_SUBSCHEMA_KEYWORDS.has(k) ? Object.values(sub) : [sub];
       for (const branch of branches) {
-        const fault$1 = visit(branch, [...path3, `<${k}>`], false);
+        const fault$1 = visit(branch, [...path4, `<${k}>`], false);
         if (fault$1 !== void 0) return fault$1;
       }
     }
@@ -18533,8 +18533,8 @@ var OBJECT_VALUED_SUBSCHEMA_KEYWORDS = /* @__PURE__ */ new Set([
   "$defs",
   "definitions"
 ]);
-function pathName(path3) {
-  return path3.length === 0 ? "<root>" : path3.join(".");
+function pathName(path4) {
+  return path4.length === 0 ? "<root>" : path4.join(".");
 }
 var HEADER_MISMATCH_ERROR_CODE = -32020;
 var INBOUND_VALIDATION_LADDER = [
@@ -18823,7 +18823,7 @@ var PROPERTY_KEYS_BY_TYPE = {
   array: shapeKeys([UntitledMultiSelectEnumSchemaSchema, TitledMultiSelectEnumSchemaSchema])
 };
 var SUPPORTED_STRING_FORMATS = new Set(StringSchemaSchema.shape.format.unwrap().options);
-function walkProperty(node, path3, vendor, unsupported) {
+function walkProperty(node, path4, vendor, unsupported) {
   if (!isJsonObject(node)) return node;
   const allowedKeys = typeof node.type === "string" && Object.hasOwn(PROPERTY_KEYS_BY_TYPE, node.type) ? PROPERTY_KEYS_BY_TYPE[node.type] : void 0;
   if (allowedKeys === void 0) return node;
@@ -18831,8 +18831,8 @@ function walkProperty(node, path3, vendor, unsupported) {
   for (const [key, value] of Object.entries(node)) if (allowedKeys.has(key) || isAnnotationOnlyJsonSchemaKeyword(key)) pruned[key] = value;
   else if (key === "pattern" && node.type === "string" && typeof node.format === "string") {
     if (!SUPPORTED_STRING_FORMATS.has(node.format)) pruned[key] = value;
-    else if (typeof value !== "string" || !isLibraryFormatPattern(node.format, value, vendor)) unsupported.push(`${path3}.${key}`);
-  } else unsupported.push(`${path3}.${key}`);
+    else if (typeof value !== "string" || !isLibraryFormatPattern(node.format, value, vendor)) unsupported.push(`${path4}.${key}`);
+  } else unsupported.push(`${path4}.${key}`);
   return pruned;
 }
 function walkRequestedSchema(converted, vendor) {
@@ -18849,11 +18849,11 @@ function describeUnsupportedProperties(pruned, fallback) {
   const offenders = Object.entries(pruned.properties).filter(([, node]) => !parseSchema(PrimitiveSchemaDefinitionSchema, node).success).map(([name]) => `properties.${name}`);
   return offenders.length > 0 ? offenders.join(", ") : fallback;
 }
-function findDroppedConstraintPaths(original, parsed, path3 = "") {
-  if (Array.isArray(original) && Array.isArray(parsed)) return original.flatMap((item, index) => findDroppedConstraintPaths(item, parsed[index], `${path3}[${index}]`));
+function findDroppedConstraintPaths(original, parsed, path4 = "") {
+  if (Array.isArray(original) && Array.isArray(parsed)) return original.flatMap((item, index) => findDroppedConstraintPaths(item, parsed[index], `${path4}[${index}]`));
   if (!isJsonObject(original) || !isJsonObject(parsed)) return [];
   return Object.entries(original).flatMap(([key, value]) => {
-    const childPath = path3 ? `${path3}.${key}` : key;
+    const childPath = path4 ? `${path4}.${key}` : key;
     if (!Object.prototype.hasOwnProperty.call(parsed, key)) return isAnnotationOnlyJsonSchemaKeyword(key) ? [] : [childPath];
     return findDroppedConstraintPaths(value, parsed[key], childPath);
   });
@@ -20063,10 +20063,10 @@ var ReadBuffer = class {
     while (this._buffer) {
       const index = this._buffer.indexOf("\n");
       if (index === -1) return null;
-      const line = this._buffer.toString("utf8", 0, index).replace(/\r$/, "");
+      const line2 = this._buffer.toString("utf8", 0, index).replace(/\r$/, "");
       this._buffer = this._buffer.subarray(index + 1);
       try {
-        return deserializeMessage(line);
+        return deserializeMessage(line2);
       } catch (error51) {
         if (error51 instanceof SyntaxError) continue;
         throw error51;
@@ -20078,8 +20078,8 @@ var ReadBuffer = class {
     this._buffer = void 0;
   }
 };
-function deserializeMessage(line) {
-  return JSONRPCMessageSchema.parse(JSON.parse(line));
+function deserializeMessage(line2) {
+  return JSONRPCMessageSchema.parse(JSON.parse(line2));
 }
 function serializeMessage(message) {
   return JSON.stringify(message) + "\n";
@@ -20339,7 +20339,7 @@ var require_scope = /* @__PURE__ */ __commonJSMin(((exports) => {
     }
   };
   exports.ValueScopeName = ValueScopeName;
-  const line = (0, code_1._)`\n`;
+  const line2 = (0, code_1._)`\n`;
   var ValueScope = class extends Scope {
     constructor(opts) {
       super(opts);
@@ -20347,7 +20347,7 @@ var require_scope = /* @__PURE__ */ __commonJSMin(((exports) => {
       this._scope = opts.scope;
       this.opts = {
         ...opts,
-        _n: opts.lines ? line : code_1.nil
+        _n: opts.lines ? line2 : code_1.nil
       };
     }
     get() {
@@ -22931,8 +22931,8 @@ var require_utils = /* @__PURE__ */ __commonJSMin(((exports, module) => {
     for (let i = 0; i < str.length; i++) if (str[i] === token) ind++;
     return ind;
   }
-  function removeDotSegments(path3) {
-    let input = path3;
+  function removeDotSegments(path4) {
+    let input = path4;
     const output = [];
     let nextSlash = -1;
     let len = 0;
@@ -23085,8 +23085,8 @@ var require_schemes = /* @__PURE__ */ __commonJSMin(((exports, module) => {
       wsComponent.secure = void 0;
     }
     if (wsComponent.resourceName) {
-      const [path3, query] = wsComponent.resourceName.split("?");
-      wsComponent.path = path3 && path3 !== "/" ? path3 : void 0;
+      const [path4, query] = wsComponent.resourceName.split("?");
+      wsComponent.path = path4 && path4 !== "/" ? path4 : void 0;
       wsComponent.query = query;
       wsComponent.resourceName = void 0;
     }
@@ -29419,9 +29419,9 @@ function responseMatchesTool(toolName, data) {
   if (toolName === "get_session_report") return typeof data.sessionRef === "string" && data.format === "markdown" && typeof data.filename === "string" && typeof data.report === "string";
   return false;
 }
-async function readObservation(toolName, query, path3, params, expectedSessionRef = null) {
+async function readObservation(toolName, query, path4, params, expectedSessionRef = null) {
   try {
-    const response = await query(path3, params);
+    const response = await query(path4, params);
     const parsed = responseSchema.safeParse(response);
     if (!parsed.success || !responseMatchesTool(toolName, parsed.data)) return invalidInternalResult(toolName);
     if (expectedSessionRef && parsed.data.sessionRef !== void 0 && parsed.data.sessionRef !== expectedSessionRef) return invalidInternalResult(toolName);
@@ -29501,7 +29501,7 @@ var AGENT_QUERY_TOOLS = Object.freeze({
     params: () => ({})
   }
 });
-function registerAgentQueryTools(server, { query, currentSessionRef = null } = {}) {
+function registerAgentQueryTools(server, { query, currentSessionRef = null, resolveCurrentSession = null } = {}) {
   const read = typeof query === "function" ? query : async () => {
     throw new Error("Pomegr monitor query client is unavailable");
   };
@@ -29513,8 +29513,13 @@ function registerAgentQueryTools(server, { query, currentSessionRef = null } = {
       inputSchema: definition.inputSchema,
       outputSchema: responseSchema,
       annotations: readAnnotations
-    }, async (input) => {
-      const resolved = definition.sessionScoped ? { ...input, session_ref: input.session_ref || hostSessionRef } : input;
+    }, async (input, extra) => {
+      let sessionRef = definition.sessionScoped ? input.session_ref || hostSessionRef : null;
+      if (definition.sessionScoped && !sessionRef && typeof resolveCurrentSession === "function") {
+        const bound = await Promise.resolve().then(() => resolveCurrentSession(input, extra, name)).catch(() => null);
+        sessionRef = sessionRefSchema.safeParse(bound).success ? bound : null;
+      }
+      const resolved = definition.sessionScoped ? { ...input, session_ref: sessionRef } : input;
       if (definition.sessionScoped && !resolved.session_ref) {
         return result(name, unavailableResponse("current_session_unavailable"));
       }
@@ -29554,11 +29559,18 @@ function resolvePomegrDataRoot(options = {}) {
 }
 
 // shared/local-auth.mjs
+import { timingSafeEqual } from "node:crypto";
 var AGENT_QUERY_AUTH_HEADER = "x-pomegr-agent-authorization";
 var TOKEN_PATTERN = /^[A-Za-z0-9_-]{32,128}$/;
 function requireDesktopToken(value, code = "DESKTOP_AUTH_INVALID") {
   if (typeof value !== "string" || !TOKEN_PATTERN.test(value)) throw new Error(code);
   return value;
+}
+function tokensMatch(actual, expected) {
+  if (typeof actual !== "string" || typeof expected !== "string") return false;
+  const actualBytes = Buffer.from(actual);
+  const expectedBytes = Buffer.from(expected);
+  return actualBytes.length === expectedBytes.length && timingSafeEqual(actualBytes, expectedBytes);
 }
 
 // shared/agent-query-transport.mjs
@@ -29621,8 +29633,25 @@ async function inspectAgentQueryDescriptor({
     return { descriptor: null, status: error51?.code === "ENOENT" ? "missing" : "unavailable" };
   }
 }
-async function readAgentQueryDescriptor(options = {}) {
-  return (await inspectAgentQueryDescriptor(options)).descriptor;
+var AGENT_QUERY_DESCRIPTOR_WAIT_MS = 2e3;
+var DESCRIPTOR_POLL_MS = 100;
+var pause = (ms) => new Promise((resolve) => {
+  setTimeout(resolve, ms);
+});
+async function awaitAgentQueryDescriptor({
+  waitMs = AGENT_QUERY_DESCRIPTOR_WAIT_MS,
+  accept = (state) => state.status === "valid",
+  sleep: sleep2 = pause,
+  now = Date.now,
+  ...options
+} = {}) {
+  const deadline = now() + Math.max(0, waitMs);
+  for (; ; ) {
+    const state = await inspectAgentQueryDescriptor(options);
+    const left = deadline - now();
+    if (accept(state) || left <= 0) return state;
+    await sleep2(Math.min(DESCRIPTOR_POLL_MS, left));
+  }
 }
 function responseBufferLimit(response, maxBytes) {
   const length = Number(response.headers?.get?.("content-length"));
@@ -29745,12 +29774,16 @@ var AGENT_TASK_WRITE_TIMEOUT_MS = 1e4;
 var AGENT_TASK_COMPLETE_TIMEOUT_MS = 25e3;
 var AGENT_TASK_UNAVAILABLE = "AGENT_QUERY_UNAVAILABLE";
 var AGENT_TASK_NO_ANSWER = "AGENT_QUERY_NO_ANSWER";
+var AGENT_TASK_NOT_CONNECTED = "AGENT_QUERY_NOT_CONNECTED";
+var AGENT_TASK_DESCRIPTOR_UNREADABLE = "AGENT_QUERY_DESCRIPTOR_UNREADABLE";
 var NOT_CONNECTED_CODES = /* @__PURE__ */ new Set(["ECONNREFUSED", "ENOTFOUND", "EAI_AGAIN", "EADDRNOTAVAIL", "ENETUNREACH", "EHOSTUNREACH", "UND_ERR_CONNECT_TIMEOUT"]);
 function neverConnected(error51) {
   const cause = error51?.cause;
   const codes = Array.isArray(cause?.errors) && cause.errors.length > 0 ? cause.errors.map((entry) => entry?.code) : [cause?.code ?? error51?.code];
   return codes.every((code) => typeof code === "string" && NOT_CONNECTED_CODES.has(code));
 }
+var NOT_SENT = /* @__PURE__ */ Symbol("not sent");
+var sameDescriptor = (left, right) => Boolean(left && right && left.origin === right.origin && tokensMatch(left.token, right.token));
 function createAgentTaskWriter({
   dataRoot,
   descriptorPath,
@@ -29759,19 +29792,14 @@ function createAgentTaskWriter({
   statFn,
   timeoutMs,
   maxBytes = AGENT_QUERY_MAX_RESPONSE_BYTES,
-  maxBodyBytes = AGENT_TASK_MAX_BODY_BYTES
+  maxBodyBytes = AGENT_TASK_MAX_BODY_BYTES,
+  descriptorWaitMs = AGENT_QUERY_DESCRIPTOR_WAIT_MS,
+  sleep: sleep2,
+  now
 } = {}) {
-  return async (pathname, body) => {
-    if (!AGENT_TASK_WRITE_PATHS.includes(pathname)) throw new Error("AGENT_QUERY_PATH_INVALID");
-    const payload = JSON.stringify(body);
-    if (typeof payload !== "string" || Buffer.byteLength(payload, "utf8") > maxBodyBytes) {
-      throw new Error("AGENT_QUERY_BODY_INVALID");
-    }
-    const descriptorState = await inspectAgentQueryDescriptor({ dataRoot, descriptorPath, readFileFn, statFn });
-    if (descriptorState.status === "invalid" || descriptorState.status === "unavailable") {
-      throw new Error("AGENT_QUERY_UNAVAILABLE");
-    }
-    const descriptor = descriptorState.descriptor;
+  const descriptorOptions = { dataRoot, descriptorPath, readFileFn, statFn };
+  const awaitDescriptor = (accept) => awaitAgentQueryDescriptor({ ...descriptorOptions, waitMs: descriptorWaitMs, accept, sleep: sleep2, now });
+  async function send(pathname, payload, descriptor) {
     const origin = descriptor?.origin || AGENT_QUERY_DEFAULT_ORIGIN;
     const headers = {
       "content-type": "application/json",
@@ -29791,7 +29819,8 @@ function createAgentTaskWriter({
           signal: controller.signal
         });
       } catch (error51) {
-        throw new Error(!controller.signal.aborted && neverConnected(error51) ? AGENT_TASK_UNAVAILABLE : AGENT_TASK_NO_ANSWER);
+        if (!controller.signal.aborted && neverConnected(error51)) return NOT_SENT;
+        throw new Error(AGENT_TASK_NO_ANSWER);
       }
       let parsed = null;
       try {
@@ -29804,6 +29833,26 @@ function createAgentTaskWriter({
     } finally {
       clearTimeout(timer);
     }
+  }
+  return async (pathname, body) => {
+    if (!AGENT_TASK_WRITE_PATHS.includes(pathname)) throw new Error("AGENT_QUERY_PATH_INVALID");
+    const payload = JSON.stringify(body);
+    if (typeof payload !== "string" || Buffer.byteLength(payload, "utf8") > maxBodyBytes) {
+      throw new Error("AGENT_QUERY_BODY_INVALID");
+    }
+    let state = await inspectAgentQueryDescriptor(descriptorOptions);
+    if (state.status === "invalid" || state.status === "unavailable") state = await awaitDescriptor((next) => next.status === "valid");
+    if (state.status === "invalid" || state.status === "unavailable") throw new Error(AGENT_TASK_DESCRIPTOR_UNREADABLE);
+    const tried = state.descriptor;
+    const answer = await send(pathname, payload, tried);
+    if (answer !== NOT_SENT) return answer;
+    const restored = await awaitDescriptor((next) => next.status === "valid" && !sameDescriptor(next.descriptor, tried));
+    if (restored.status !== "valid" || sameDescriptor(restored.descriptor, tried)) {
+      throw new Error(tried ? AGENT_TASK_UNAVAILABLE : AGENT_TASK_NOT_CONNECTED);
+    }
+    const retried = await send(pathname, payload, restored.descriptor);
+    if (retried === NOT_SENT) throw new Error(AGENT_TASK_UNAVAILABLE);
+    return retried;
   };
 }
 function defaultAgentQueryDataRoot(environment = process.env) {
@@ -29811,7 +29860,7 @@ function defaultAgentQueryDataRoot(environment = process.env) {
 }
 
 // plugin-src/task-binding-proof.mjs
-import { createHmac, timingSafeEqual } from "node:crypto";
+import { createHmac, timingSafeEqual as timingSafeEqual2 } from "node:crypto";
 var PREFIX = "pomegr-task-binding/v1";
 var TASK_BINDING_PROOF_WINDOW_MS = 10 * 6e4;
 var TASK_BINDING_PROOF_FUTURE_SKEW_MS = 5e3;
@@ -29827,33 +29876,204 @@ ${issuedAt}`, "utf8").digest("base64url");
 function usable(token, tool, sessionRef) {
   return typeof token === "string" && token.length > 0 && typeof tool === "string" && TOOL.test(tool) && typeof sessionRef === "string" && SESSION_REF.test(sessionRef);
 }
+function verifyFresh(proof, now, macFor) {
+  if (typeof proof !== "string" || proof.length > 64 || !Number.isFinite(now)) return false;
+  const match = PROOF.exec(proof);
+  if (!match) return false;
+  const issuedAt = Number(match[1]);
+  if (!Number.isSafeInteger(issuedAt)) return false;
+  const age = now - issuedAt;
+  if (age > TASK_BINDING_PROOF_WINDOW_MS || age < -TASK_BINDING_PROOF_FUTURE_SKEW_MS) return false;
+  const given = Buffer.from(match[2], "utf8");
+  const expected = Buffer.from(macFor(match[1]), "utf8");
+  return given.length === expected.length && timingSafeEqual2(given, expected);
+}
 function verifyTaskBindingProof(input) {
   try {
     const { token, tool, sessionRef, proof, now = Date.now() } = input ?? {};
-    if (!usable(token, tool, sessionRef) || typeof proof !== "string" || proof.length > 64 || !Number.isFinite(now)) return false;
-    const match = PROOF.exec(proof);
-    if (!match) return false;
-    const issuedAt = Number(match[1]);
-    if (!Number.isSafeInteger(issuedAt)) return false;
-    const age = now - issuedAt;
-    if (age > TASK_BINDING_PROOF_WINDOW_MS || age < -TASK_BINDING_PROOF_FUTURE_SKEW_MS) return false;
-    const given = Buffer.from(match[2], "utf8");
-    const expected = Buffer.from(mac3(token, tool, sessionRef, match[1]), "utf8");
-    return given.length === expected.length && timingSafeEqual(given, expected);
+    return usable(token, tool, sessionRef) && verifyFresh(proof, now, (issuedAt) => mac3(token, tool, sessionRef, issuedAt));
   } catch {
     return false;
+  }
+}
+var CALL_PREFIX = "pomegr-task-call/v1";
+var TOOL_USE_ID = /^[A-Za-z0-9_-]{1,128}$/u;
+var DIGEST = /^[A-Za-z0-9_-]{43}$/u;
+function callUsable({ token, tool, sessionRef, toolUseId, inputDigest, host }) {
+  return usable(token, tool, sessionRef) && typeof toolUseId === "string" && TOOL_USE_ID.test(toolUseId) && typeof inputDigest === "string" && DIGEST.test(inputDigest) && Number.isSafeInteger(host) && host > 0;
+}
+function callMac({ token, tool, sessionRef, toolUseId, inputDigest, host }, issuedAt) {
+  return createHmac("sha256", token).update(`${CALL_PREFIX}
+${tool}
+${sessionRef}
+${toolUseId}
+${inputDigest}
+${host}
+${issuedAt}`, "utf8").digest("base64url");
+}
+function verifyTaskCallProof(input) {
+  try {
+    const { proof, now = Date.now(), ...fields } = input ?? {};
+    return callUsable(fields) && verifyFresh(proof, now, (issuedAt) => callMac(fields, issuedAt));
+  } catch {
+    return false;
+  }
+}
+
+// plugin-src/task-call-handoff.mjs
+import { createHash, randomUUID } from "node:crypto";
+import { mkdir as mkdir2, readdir, readFile as readFile2, rename as rename2, stat as stat2, unlink, writeFile as writeFile2 } from "node:fs/promises";
+import path3 from "node:path";
+var TASK_CALL_HANDOFF_DIRECTORY = "task-call-handoffs";
+var TASK_CALL_HANDOFF_WAIT_MS = 1e3;
+var POLL_MS = 50;
+var MAX_BYTES = 1024;
+var TOOL_USE_ID2 = /^[A-Za-z0-9_-]{1,128}$/u;
+var SESSION_REF2 = /^claude:[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/iu;
+var pause2 = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+function taskCallToolUseId(value) {
+  return typeof value === "string" && TOOL_USE_ID2.test(value) ? value : null;
+}
+function canonical(value) {
+  if (Array.isArray(value)) return `[${value.map(canonical).join(",")}]`;
+  if (value !== null && typeof value === "object") {
+    return `{${Object.keys(value).sort().map((key) => `${JSON.stringify(key)}:${canonical(value[key])}`).join(",")}}`;
+  }
+  return JSON.stringify(value) ?? "null";
+}
+function taskCallInputDigest(input) {
+  return createHash("sha256").update(canonical(input ?? {}), "utf8").digest("base64url");
+}
+function taskCallHandoffName(toolUseId) {
+  return `${createHash("sha256").update(toolUseId, "utf8").digest("hex")}.json`;
+}
+var directoryOf = (dataRoot) => path3.join(path3.resolve(dataRoot), TASK_CALL_HANDOFF_DIRECTORY);
+async function claim(target) {
+  const taken = `${target}.${randomUUID()}.taken`;
+  try {
+    await rename2(target, taken);
+  } catch {
+    return void 0;
+  }
+  try {
+    const text = await readFile2(taken, "utf8");
+    return text.length <= MAX_BYTES ? text : null;
+  } catch {
+    return null;
+  } finally {
+    await unlink(taken).catch(() => {
+    });
+  }
+}
+async function takeTaskCallHandoff({
+  dataRoot,
+  toolUseId,
+  tool,
+  host,
+  input,
+  readToken,
+  now = Date.now,
+  waitMs = TASK_CALL_HANDOFF_WAIT_MS,
+  sleep: sleep2 = pause2
+}) {
+  try {
+    const id = taskCallToolUseId(toolUseId);
+    if (!id || typeof dataRoot !== "string" || !dataRoot || !Number.isSafeInteger(host) || host <= 0) return null;
+    const target = path3.join(directoryOf(dataRoot), taskCallHandoffName(id));
+    let text = await claim(target);
+    for (let waited = 0; text === void 0 && waited < waitMs; waited += POLL_MS) {
+      await sleep2(Math.min(POLL_MS, waitMs - waited));
+      text = await claim(target);
+    }
+    if (typeof text !== "string") return null;
+    const held = JSON.parse(text);
+    if (held === null || typeof held !== "object" || held.v !== 1 || typeof held.sessionRef !== "string" || !SESSION_REF2.test(held.sessionRef) || typeof held.proof !== "string") return null;
+    const token = await readToken();
+    return verifyTaskCallProof({
+      token,
+      tool,
+      sessionRef: held.sessionRef,
+      toolUseId: id,
+      inputDigest: taskCallInputDigest(input),
+      host,
+      proof: held.proof,
+      now: now()
+    }) ? held.sessionRef : null;
+  } catch {
+    return null;
   }
 }
 
 // shared/task-rework-report.mjs
 var REWORK_CAUSES = ["missed_wiring", "spec_gap", "wrong_behavior", "stale_instructions", "latent", "other"];
 var isReworkReference = (value) => typeof value === "string" && value.trim() === value && /^(?:T-|#)[1-9][0-9]*$/u.test(value) && Number.isSafeInteger(Number(value.slice(value.startsWith("T-") ? 2 : 1)));
-function reportReworkResults(value) {
-  return (Array.isArray(value) ? value : []).slice(0, 5).flatMap((entry) => {
-    if (!isReworkReference(entry?.ref)) return [];
-    if (["recorded", "exists"].includes(entry.status)) return [{ ref: entry.ref, status: entry.status }];
-    return entry.status === "refused" && ["invalid", "not_found", "limit"].includes(entry.reason) ? [{ ref: entry.ref, status: "refused", reason: entry.reason }] : [];
-  });
+function validReportReworks(value) {
+  return Array.isArray(value) && value.length >= 1 && value.length <= 5 && value.every((entry) => entry !== null && typeof entry === "object" && !Array.isArray(entry) && Object.keys(entry).length === 2 && isReworkReference(entry.ref) && REWORK_CAUSES.includes(entry.cause));
+}
+
+// shared/task-report-input.mjs
+var TASK_REPORT_LINE_LIMIT = 200;
+var TASK_ID = /^T-[1-9][0-9]{0,8}$/u;
+var ONE_LINE = /^[^\u0000-\u001f\u007f-\u009f\u2028\u2029]+$/u;
+var HOOK_FIELDS = ["session_ref", "session_proof"];
+var FIELDS = { complete: ["task_id", "reworks", "attention"], block: ["task_id", "reworks", "reason"] };
+function line(value) {
+  if (typeof value !== "string") return null;
+  const text = value.trim();
+  return text.length >= 1 && text.length <= TASK_REPORT_LINE_LIMIT && ONE_LINE.test(text) ? text : null;
+}
+function taskReportInput(kind, input) {
+  if (!Object.hasOwn(FIELDS, kind) || input === null || typeof input !== "object" || Array.isArray(input)) return null;
+  if (Object.keys(input).some((key) => !FIELDS[kind].includes(key) && !HOOK_FIELDS.includes(key))) return null;
+  if (HOOK_FIELDS.some((key) => input[key] !== void 0 && (typeof input[key] !== "string" || input[key].length > 200))) return null;
+  const report = {};
+  if (input.task_id !== void 0) {
+    if (typeof input.task_id !== "string" || !TASK_ID.test(input.task_id)) return null;
+    report.taskId = input.task_id;
+  }
+  if (input.reworks !== void 0) {
+    if (!validReportReworks(input.reworks)) return null;
+    report.reworks = input.reworks.map(({ ref, cause }) => ({ ref, cause }));
+  }
+  if (kind === "complete" && input.attention !== void 0) {
+    const attention = line(input.attention);
+    if (attention === null) return null;
+    report.attention = attention;
+  }
+  if (kind === "block") {
+    const reason = line(input.reason);
+    if (reason === null) return null;
+    report.reason = reason;
+  }
+  return report;
+}
+
+// shared/agent-connection-text.mjs
+var FEATURE_OUTCOME = "so no feature was read or changed";
+var READ_OUTCOME = "so no task was read";
+var AGENT_TOOL_OUTCOME = {
+  add_task: "so no task was added",
+  get_task: READ_OUTCOME,
+  list_tasks: READ_OUTCOME,
+  update_task: "so no task was changed",
+  remove_task: "so no task was removed",
+  assign_task: "so no task was assigned",
+  unassign_task: "so no task was unassigned",
+  report_review: "so no verdict was recorded",
+  get_feature: FEATURE_OUTCOME,
+  create_feature: FEATURE_OUTCOME,
+  update_feature: FEATURE_OUTCOME,
+  delete_feature: FEATURE_OUTCOME
+};
+var AGENT_CONNECTION_MISSING = "No Pomegr desktop app is connected to this session: Pomegr is closed, or an older Pomegr copy removed its connection file. Tell the user to open Pomegr, or to restart it if it is open, and make this call again after that.";
+var AGENT_CONNECTION_UNREADABLE = "Pomegr's connection file for this session could not be read. Tell the user to restart the Pomegr desktop app, and make this call again after that.";
+var AGENT_REPORT_NOT_ARRIVED = {
+  report_review: "The task still waits for your verdict: tell the user your verdict, because it was not recorded."
+};
+function agentConnectionSentence(cause, tool) {
+  const sentence = cause === "unreadable" ? AGENT_CONNECTION_UNREADABLE : AGENT_CONNECTION_MISSING;
+  const report = AGENT_REPORT_NOT_ARRIVED[tool];
+  return report ? `${sentence} ${report}` : sentence;
 }
 
 // mcp/task-tools.mjs
@@ -29863,6 +30083,7 @@ var optionalReworks = external_exports.array(external_exports.object({
 }).strict()).min(1).max(5).optional();
 var TASK_ADD_PATH = "/api/agent/v1/tasks/add";
 var TASK_COMPLETE_PATH = "/api/agent/v1/tasks/complete";
+var COMPLETE_STOP_TEXT = "Now stop: end every background shell, watcher, or server this session started, and end your turn. Pomegr ends this session once it is idle; if a review sends the task back, Pomegr continues this session with the findings.";
 var TASK_BLOCK_PATH = "/api/agent/v1/tasks/block";
 var TASK_REMOVE_PATH = "/api/agent/v1/tasks/remove";
 var TASK_ASSIGN_PATH = "/api/agent/v1/tasks/assign";
@@ -29874,11 +30095,12 @@ var FEATURE_GET_PATH = "/api/agent/v1/tasks/feature-get";
 var FEATURE_CREATE_PATH = "/api/agent/v1/tasks/feature-create";
 var FEATURE_UPDATE_PATH = "/api/agent/v1/tasks/feature-update";
 var FEATURE_DELETE_PATH = "/api/agent/v1/tasks/feature-delete";
-var TASK_TOOL_INSTRUCTIONS = "Use add_task to put follow-up work on the current repository's Pomegr task board when the user asks for it; it only adds a task in the first column, it does not queue or start anything, and the repository is always the current session's. Use update_task to change a task of that board that has not started, such as to add a finding to its text, when the user asks for it or the work calls for it; the text you set replaces the stored text whole, so read the task with get_task first and set the whole text it should have. Use get_task to read one task of that board by its ID, and list_tasks to find tasks of the board by a part of their text, their state, their feature, or whether update_task can change them; both only read. Use remove_task only to delete a task this session added itself with add_task, such as a duplicate, while it has not started; it cannot be undone, and it never removes a task the user or another session added. When Pomegr started this session for a task, call complete_task when the task is complete, which puts the task in Review for the user, adding its attention line only when something in the finished work needs the user's attention, or block_task with a short reason when you cannot proceed; the latest report wins until the owner marks the task done, and only a session Pomegr started for the task or assigned to it may report. Use reworks to name 1-5 earlier tasks (T-n) or pull requests (#n) this task fixes or redoes, with a cause, only when this session knows it. A review session reports its verdict with report_review, never complete_task or block_task. A completion after a block moves the task to Review but keeps the owner-controlled queue hold. Use assign_task when the user asks this session to work on an existing board task it was not started for, such as to resume a task whose first session stopped, then report with complete_task or block_task, naming task_id if the session has more than one task; use unassign_task when the session stops working on that task. A feature groups tasks of the board and holds their shared context: a title, a description, and an app version. Use get_feature when a task of a feature needs that context; with no input it reads the feature of the task this session was started for. Use create_feature, update_feature, and delete_feature only when the user asks to change the board's features; delete_feature removes only a feature that has no task.";
+var TASK_TOOL_INSTRUCTIONS = "Use add_task to put follow-up work on the current repository's Pomegr task board when the user asks for it; it only adds a task in the first column, it does not queue or start anything, and the repository is always the current session's. Use update_task to change a task of that board that has not started, such as to add a finding to its text, when the user asks for it or the work calls for it; the text you set replaces the stored text whole, so read the task with get_task first and set the whole text it should have. Use get_task to read one task of that board by its ID, and list_tasks to find tasks of the board by a part of their text, their state, their feature, or whether update_task can change them; both only read. Use remove_task only to delete a task this session added itself with add_task, such as a duplicate, while it has not started; it cannot be undone, and it never removes a task the user or another session added. When Pomegr started this session for a task, call complete_task when the task is complete, which puts the task in Review for the user, adding its attention line only when something in the finished work needs the user's attention, or block_task with a short reason when you cannot proceed. Both answer at once, and Pomegr applies the report when it reads the call in this session's own transcript; the latest report wins until the owner marks the task done, only a session Pomegr started for the task or assigned to it may report, and a report Pomegr refuses is written to the task's log. Use reworks to name 1-5 earlier tasks (T-n) or pull requests (#n) this task fixes or redoes, with a cause, only when this session knows it. A review session reports its verdict with report_review, never complete_task or block_task. A completion after a block moves the task to Review but keeps the owner-controlled queue hold. Use assign_task when the user asks this session to work on an existing board task it was not started for, such as to resume a task whose first session stopped, then report with complete_task or block_task, naming task_id if the session has more than one task; use unassign_task when the session stops working on that task. A feature groups tasks of the board and holds their shared context: a title, a description, and an app version. Use get_feature when a task of a feature needs that context; with no input it reads the feature of the task this session was started for. Use create_feature, update_feature, and delete_feature only when the user asks to change the board's features; delete_feature removes only a feature that has no task.";
 var TASK_UNBOUND_TEXT = "Pomegr could not bind this call to the current session, so no task was added.";
 var TASK_UNAVAILABLE_TEXT = "Pomegr is unavailable, so no task was added.";
 var TASK_NO_ANSWER_TEXT = "Pomegr did not answer in time, so it is unknown whether the task was added. It may have been: do not assume it failed. Calling add_task again with exactly the same text and feature within a few minutes is safe and returns the same task instead of a second one; do not add it again with different wording.";
-var TASK_REPORT_NO_ANSWER_TEXT = "Pomegr did not answer in time, so it is unknown whether the report was recorded. It may have been: do not assume it failed. Retry the same report only if it still describes the work: the latest report wins until the owner marks the task done. A completion after a block does not clear the owner-controlled hold.";
+var COMPLETE_ACCEPTED_TEXT = "Completion accepted. Pomegr applies it when it reads this call in this session's transcript: the task goes to Review with the result of each checked condition, and the user marks it done. A report Pomegr refuses is written to the task's log for the user.";
+var BLOCK_ACCEPTED_TEXT = "Block accepted. Pomegr applies it when it reads this call in this session's transcript: the task becomes Blocked by agent, and the user will resolve it. A report Pomegr refuses is written to the task's log for the user.";
 var TASK_REMOVE_NO_ANSWER_TEXT = "Pomegr did not answer in time, so it is unknown whether the task was removed. It may have been: do not assume it failed. Calling remove_task once more with the same task ID is safe; if the answer is that no task was removed, the first call removed it or it could not be removed.";
 var TASK_ASSIGN_UNBOUND_TEXT = "Pomegr could not bind this call to the current session, so no task was assigned.";
 var TASK_UNASSIGN_UNBOUND_TEXT = "Pomegr could not bind this call to the current session, so no task was unassigned.";
@@ -29886,6 +30108,11 @@ var TASK_ASSIGN_NO_ANSWER_TEXT = "Pomegr did not answer in time, so it is unknow
 var TASK_UNASSIGN_NO_ANSWER_TEXT = "Pomegr did not answer in time, so it is unknown whether the task was unassigned. It may have been: do not assume it failed. Calling unassign_task once more with the same task ID is safe; if the answer is that this session is not assigned, the first call removed the assignment or there was none.";
 var repositoryUnavailableText = (outcome) => `Git has not confirmed the current session's repository, so ${outcome}. It does not mean the board is empty: Pomegr did not read it.`;
 var noAnswer = (error51) => error51 instanceof Error && error51.message === AGENT_TASK_NO_ANSWER;
+function unreachedText(error51, tool, fallback) {
+  const message = error51 instanceof Error ? error51.message : null;
+  const cause = message === AGENT_TASK_NOT_CONNECTED ? "missing" : message === AGENT_TASK_DESCRIPTOR_UNREADABLE ? "unreadable" : null;
+  return cause ? `Pomegr could not reach its desktop app, ${AGENT_TOOL_OUTCOME[tool]}. ${agentConnectionSentence(cause, tool)}` : fallback;
+}
 var CHECKS = ["pr_open", "tree_clean", "commit_on_branch", "pr_merged", "ci_passed", "user_validated"];
 var REASON_TEXT = {
   invalid: "Pomegr rejected the task as invalid, so no task was added.",
@@ -29955,13 +30182,8 @@ var CHECK_LABELS = {
 };
 var REPORT_REASON_TEXT = {
   invalid: "Pomegr rejected the report as invalid, so nothing was reported.",
-  not_found: "No Pomegr task is linked to this session, or the task named is not one of its tasks, so nothing was reported.",
-  task_required: "This session has more than one task, so nothing was reported. Call the tool again with task_id set to the task you are reporting on.",
-  already_reported: "This task no longer accepts reports, so nothing changed. Tell the user what remains and ask them to review the task on the board.",
-  stalled: "Pomegr marked this task Stalled, because it read this session as ended before any report, so nothing was reported. Only the user can change that, with Mark done or Requeue on the board. Tell the user what you finished, and do not report again.",
   unavailable: "Pomegr is unavailable, so nothing was reported."
 };
-var TASK_REPORT_UNBOUND_TEXT = "Pomegr could not bind this call to the current session, so nothing was reported.";
 var TASK_REVIEW_UNBOUND_TEXT = "Pomegr could not bind this call to the current session, so no verdict was recorded.";
 var TASK_REVIEW_NO_ANSWER_TEXT = "Pomegr did not answer in time, so it is unknown whether the verdict was recorded. It may have been: do not assume it failed. Retry the same verdict only if it still describes the review; an identical retry changes nothing.";
 var REVIEW_REASON_TEXT = {
@@ -29969,6 +30191,11 @@ var REVIEW_REASON_TEXT = {
   not_found: "This session is not the reviewer of a task, or that task ID is not one it reviews.",
   not_reviewable: "The task is no longer in Review, so no verdict was recorded.",
   unavailable: REPORT_REASON_TEXT.unavailable
+};
+var REVIEW_CAUSE_TEXT = {
+  not_linked: "No verdict was recorded: Pomegr has not linked this session to a task's review. If Pomegr started this session to review a task, its link failed: tell the user your verdict and ask them to start the review again from the task in Review. A session Pomegr did not start as a reviewer cannot report a verdict.",
+  wrong_task: "No verdict was recorded: this session reviews another task than the task_id named. Call report_review again without task_id, or with the task this session reviews.",
+  review_replaced: "No verdict was recorded: this session's review of the task is no longer the current one, because a send-back, a newer review, or the end of the task's stay in Review replaced it. Tell the user your verdict; only the task's current review can report."
 };
 var TASK_REMOVE_UNBOUND_TEXT = "Pomegr could not bind this call to the current session, so no task was removed.";
 var REMOVE_REASON_TEXT = {
@@ -29994,7 +30221,7 @@ var UNASSIGN_REASON_TEXT = {
   unavailable: "Pomegr is unavailable, so no task was unassigned."
 };
 var taskIdSchema = external_exports.string().regex(/^T-[1-9][0-9]{0,8}$/u, "Use a task ID such as T-12.");
-var ONE_LINE = /^[^\u0000-\u001f\u007f-\u009f\u2028\u2029]+$/u;
+var ONE_LINE2 = /^[^\u0000-\u001f\u007f-\u009f\u2028\u2029]+$/u;
 var TEXT_LINES = /^[^\u0000-\u0008\u000b\u000c\u000e-\u001f\u007f-\u009f\u2028\u2029]*$/u;
 var TASK_UPDATE_UNBOUND_TEXT = "Pomegr could not bind this call to the current session, so no task was changed.";
 var TASK_UPDATE_NO_ANSWER_TEXT = "Pomegr did not answer in time, so it is unknown whether the task was changed. It may have been: do not assume it failed. Calling update_task once more with exactly the same input is safe, because it sets the same values again.";
@@ -30029,10 +30256,10 @@ var FEATURE_CONFLICT_TEXT = {
 };
 var optionalTaskId = taskIdSchema.optional().describe("Optional. ID of the task, such as T-12. Needed only when this session has more than one task: the one Pomegr started it for and tasks assigned to it.");
 var featureReference = (optional2) => {
-  const schema = external_exports.string().trim().min(1).max(80).regex(ONE_LINE, "Use one line of plain text.");
+  const schema = external_exports.string().trim().min(1).max(80).regex(ONE_LINE2, "Use one line of plain text.");
   return optional2 ? schema.optional().describe("Optional. The feature's ID, such as feat-0123456789ab, or its exact title. Leave it out to read the feature of the task this session was started for.") : schema.describe("The feature's ID, such as feat-0123456789ab, or its exact title.");
 };
-var featureTitle = external_exports.string().trim().min(1).max(80).regex(ONE_LINE, "Use one line of plain text.");
+var featureTitle = external_exports.string().trim().min(1).max(80).regex(ONE_LINE2, "Use one line of plain text.");
 var featureDescription = external_exports.string().trim().max(2e3).regex(TEXT_LINES, "Use plain text.");
 var featureAppVersion = external_exports.string().trim().max(40).regex(/^[^\u0000-\u001f\u007f-\u009f\u2028\u2029]*$/u, "Use one line of plain text.");
 var clearable = (value) => value === void 0 ? void 0 : value === "" ? null : value;
@@ -30085,7 +30312,7 @@ function formatTaskList(answer) {
 function result2(text, isError) {
   return { ...isError ? { isError: true } : {}, content: [{ type: "text", text }] };
 }
-function registerTaskTools(server, { resolveSession, post, hookBound = false }) {
+function registerTaskTools(server, { resolveSession, post, hookBound = false, reportSent = null }) {
   server.registerTool("add_task", {
     title: "Add a Pomegr task",
     description: "Add a task to the current repository's Pomegr board, in the first column, not queued. It does not start any session. Set runs_after to the tasks of the board it must wait for: it never starts until each is Done or deleted. Adding the same text to the same feature again within a few minutes returns the task already added instead of a second one. The repository and session are bound by the host; there is no repository or path input.",
@@ -30098,7 +30325,7 @@ function registerTaskTools(server, { resolveSession, post, hookBound = false }) 
     try {
       answer = await post(TASK_ADD_PATH, buildAddTaskBody(ref, input));
     } catch (error51) {
-      return result2(noAnswer(error51) ? TASK_NO_ANSWER_TEXT : TASK_UNAVAILABLE_TEXT, true);
+      return result2(noAnswer(error51) ? TASK_NO_ANSWER_TEXT : unreachedText(error51, "add_task", TASK_UNAVAILABLE_TEXT), true);
     }
     if (answer && answer.ok === true && typeof answer.taskId === "string" && /^T-\d{1,9}$/u.test(answer.taskId)) {
       return result2(`Task ${answer.taskId} added to the board, not queued.`, false);
@@ -30106,14 +30333,14 @@ function registerTaskTools(server, { resolveSession, post, hookBound = false }) 
     const text = answer && answer.ok === false && typeof answer.reason === "string" && Object.hasOwn(REASON_TEXT, answer.reason) ? REASON_TEXT[answer.reason] : TASK_UNAVAILABLE_TEXT;
     return result2(text, true);
   });
-  const readTasks = async (tool, path3, input, extra, body, done) => {
+  const readTasks = async (tool, path4, input, extra, body, done) => {
     const ref = await resolveSession(input, extra, tool);
     if (typeof ref !== "string" || !ref) return result2(TASK_READ_UNBOUND_TEXT, true);
     let answer;
     try {
-      answer = await post(path3, { sessionRef: ref, ...body });
-    } catch {
-      return result2(READ_REASON_TEXT.unavailable, true);
+      answer = await post(path4, { sessionRef: ref, ...body });
+    } catch (error51) {
+      return result2(unreachedText(error51, tool, READ_REASON_TEXT.unavailable), true);
     }
     if (answer && answer.ok === true) {
       const text2 = done(answer);
@@ -30142,7 +30369,7 @@ function registerTaskTools(server, { resolveSession, post, hookBound = false }) 
     title: "List Pomegr tasks",
     description: "List the tasks of the current repository's Pomegr board, in board order, with the same fields as get_task. It returns at most 100 tasks, and cuts each text at 300 characters; read a cut task whole with get_task. Narrow the list with query (a part of the text or the own condition, any case), state, feature (its exact title), or editable (true for the tasks update_task can change). It changes nothing. The repository and session are bound by the host.",
     inputSchema: external_exports.object({
-      query: external_exports.string().trim().min(1).max(80).regex(ONE_LINE, "Use one line of plain text.").optional().describe("Optional. Lists only the tasks whose text or own condition holds this, in any case."),
+      query: external_exports.string().trim().min(1).max(80).regex(ONE_LINE2, "Use one line of plain text.").optional().describe("Optional. Lists only the tasks whose text or own condition holds this, in any case."),
       state: external_exports.enum(TASK_STATES).optional().describe("Optional. Lists only the tasks in this state."),
       feature: featureTitle.optional().describe("Optional. Lists only the tasks of the feature with this exact title."),
       editable: external_exports.boolean().optional().describe("Optional. True lists only the tasks update_task can change, false only the others."),
@@ -30181,7 +30408,7 @@ function registerTaskTools(server, { resolveSession, post, hookBound = false }) 
     try {
       answer = await post(TASK_UPDATE_PATH, buildUpdateTaskBody(ref, input));
     } catch (error51) {
-      return result2(noAnswer(error51) ? TASK_UPDATE_NO_ANSWER_TEXT : UPDATE_REASON_TEXT.unavailable, true);
+      return result2(noAnswer(error51) ? TASK_UPDATE_NO_ANSWER_TEXT : unreachedText(error51, "update_task", UPDATE_REASON_TEXT.unavailable), true);
     }
     if (answer && answer.ok === true) return result2(`Task ${input.task_id} updated.`, false);
     const text = answer && answer.ok === false && typeof answer.reason === "string" && Object.hasOwn(UPDATE_REASON_TEXT, answer.reason) ? UPDATE_REASON_TEXT[answer.reason] : UPDATE_REASON_TEXT.unavailable;
@@ -30202,20 +30429,20 @@ function registerTaskTools(server, { resolveSession, post, hookBound = false }) 
     try {
       answer = await post(TASK_REMOVE_PATH, { sessionRef: ref, taskId: input.task_id });
     } catch (error51) {
-      return result2(noAnswer(error51) ? TASK_REMOVE_NO_ANSWER_TEXT : REMOVE_REASON_TEXT.unavailable, true);
+      return result2(noAnswer(error51) ? TASK_REMOVE_NO_ANSWER_TEXT : unreachedText(error51, "remove_task", REMOVE_REASON_TEXT.unavailable), true);
     }
     if (answer && answer.ok === true) return result2(`Task ${input.task_id} removed from the board.`, false);
     const text = answer && answer.ok === false && typeof answer.reason === "string" && Object.hasOwn(REMOVE_REASON_TEXT, answer.reason) ? REMOVE_REASON_TEXT[answer.reason] : REMOVE_REASON_TEXT.unavailable;
     return result2(text, true);
   });
-  const assignment = (tool, path3, unboundText, noAnswerText, reasons, done) => async (input, extra) => {
+  const assignment = (tool, path4, unboundText, noAnswerText, reasons, done) => async (input, extra) => {
     const ref = await resolveSession(input, extra, tool);
     if (typeof ref !== "string" || !ref) return result2(unboundText, true);
     let answer;
     try {
-      answer = await post(path3, { sessionRef: ref, taskId: input.task_id });
+      answer = await post(path4, { sessionRef: ref, taskId: input.task_id });
     } catch (error51) {
-      return result2(noAnswer(error51) ? noAnswerText : reasons.unavailable, true);
+      return result2(noAnswer(error51) ? noAnswerText : unreachedText(error51, tool, reasons.unavailable), true);
     }
     if (answer && answer.ok === true) return result2(done(input.task_id), false);
     const text = answer && answer.ok === false && typeof answer.reason === "string" && Object.hasOwn(reasons, answer.reason) ? reasons[answer.reason] : reasons.unavailable;
@@ -30253,56 +30480,40 @@ function registerTaskTools(server, { resolveSession, post, hookBound = false }) 
     UNASSIGN_REASON_TEXT,
     (taskId) => `Task ${taskId} unassigned from this session.`
   ));
-  const report = async (path3, ref, body, done) => {
-    if (typeof ref !== "string" || !ref) return result2(TASK_REPORT_UNBOUND_TEXT, true);
-    let answer;
-    try {
-      answer = await post(path3, { sessionRef: ref, ...body });
-    } catch (error51) {
-      return result2(noAnswer(error51) ? TASK_REPORT_NO_ANSWER_TEXT : REPORT_REASON_TEXT.unavailable, true);
-    }
-    if (answer && answer.ok === true) {
-      const text2 = done(answer);
-      if (text2) {
-        const reworks = reportReworkResults(answer.reworks).map((entry) => `${entry.ref} ${entry.status === "refused" ? `refused (${entry.reason})` : entry.status === "exists" ? "already existed" : "recorded"}`);
-        return result2(text2 + (reworks.length ? ` Reworks: ${reworks.join("; ")}.` : ""), false);
-      }
-    }
-    const text = answer && answer.ok === false && typeof answer.reason === "string" && Object.hasOwn(REPORT_REASON_TEXT, answer.reason) ? REPORT_REASON_TEXT[answer.reason] : REPORT_REASON_TEXT.unavailable;
-    return result2(text, true);
+  const accepted = (kind, input, extra) => {
+    const report = taskReportInput(kind, input);
+    if (report === null) return result2(REPORT_REASON_TEXT.invalid, true);
+    const sent = (async () => {
+      const ref = await resolveSession(input, extra, kind === "complete" ? "complete_task" : "block_task");
+      if (typeof ref !== "string" || !ref) return;
+      await post(kind === "complete" ? TASK_COMPLETE_PATH : TASK_BLOCK_PATH, {
+        sessionRef: ref,
+        ...report.taskId === void 0 ? {} : { taskId: report.taskId },
+        ...kind === "complete" ? report.attention === void 0 ? {} : { attention: report.attention } : { reason: report.reason },
+        ...report.reworks === void 0 ? {} : { reworks: report.reworks }
+      });
+    })().catch(() => {
+    });
+    reportSent?.(sent);
+    return result2(kind === "complete" ? `${COMPLETE_ACCEPTED_TEXT} ${COMPLETE_STOP_TEXT}` : BLOCK_ACCEPTED_TEXT, false);
   };
   server.registerTool("complete_task", {
     title: "Report the Pomegr task complete",
-    description: "Report that the task Pomegr started this session for, or a task assigned to this session, is complete. Pomegr verifies the checked conditions and records each result. The task goes to Review; only the user marks it done. Set attention only when the work is finished but something needs the user's attention, such as a choice you made for them or a follow-up they must do; leave it out otherwise. An initial completion puts the task in Review and does not hold the queue; when the work that follows must not start, call block_task instead. A completion after a block records fresh check results and moves the task to Review. An earlier block still holds the queue until the owner chooses Mark done or Requeue. The session is bound by the host, and the latest report wins until the owner marks the task done. Name task_id only when this session has more than one task. The tool has no summary or result field: a plain completion is a call with no input. A denied call changed nothing, so one retry with only the allowed fields is safe. Use reworks to name 1-5 earlier tasks (T-n) or pull requests (#n) this task fixes or redoes, with a cause, only when this session knows it.",
+    description: "Report that the task Pomegr started this session for, or a task assigned to this session, is complete. The call answers at once and changes nothing by itself: Pomegr applies it when it reads this call in this session's own transcript, verifies the checked conditions then, and records each result; a report made before Pomegr linked the session to its task is applied once the link exists. The task goes to Review; only the user marks it done. Set attention only when the work is finished but something needs the user's attention, such as a choice you made for them or a follow-up they must do; leave it out otherwise. An initial completion puts the task in Review and does not hold the queue; when the work that follows must not start, call block_task instead. A completion after a block records fresh check results and moves the task to Review. An earlier block still holds the queue until the owner chooses Mark done or Requeue. The latest report wins until the owner marks the task done; a report Pomegr refuses, such as one for a task that is done or not this session's, is written to the task's log for the user. Name task_id only when this session has more than one task. The tool has no summary or result field: a plain completion is a call with no input. A call answered invalid changed nothing, so one retry with only the allowed fields is safe. Use reworks to name 1-5 earlier tasks (T-n) or pull requests (#n) this task fixes or redoes, with a cause, only when this session knows it.",
     inputSchema: external_exports.object({
       task_id: optionalTaskId,
       reworks: optionalReworks,
-      attention: external_exports.string().trim().min(1).max(200).regex(ONE_LINE, "Use one line of plain text.").optional().describe("Optional. What in the finished work needs the user's attention, in one line of at most 200 characters. No secrets, commands, or output."),
+      attention: external_exports.string().trim().min(1).max(200).regex(ONE_LINE2, "Use one line of plain text.").optional().describe("Optional. What in the finished work needs the user's attention, in one line of at most 200 characters. No secrets, commands, or output."),
       ...hookFields(hookBound)
     }).strict(),
     annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false }
-  }, async (input, extra) => report(TASK_COMPLETE_PATH, await resolveSession(input, extra, "complete_task"), { ...input.task_id === void 0 ? {} : { taskId: input.task_id }, ...input.attention === void 0 ? {} : { attention: input.attention }, ...input.reworks === void 0 ? {} : { reworks: input.reworks } }, (answer) => {
-    if (answer.state === "done") return "Task reported complete. Pomegr marked it done.";
-    if (!["needs_review", "blocked"].includes(answer.state)) return null;
-    if (answer.state === "blocked" && !Array.isArray(answer.results)) return null;
-    const open = (Array.isArray(answer.results) ? answer.results : []).filter((entry) => entry && entry.passed === false && Object.hasOwn(CHECK_LABELS, entry.check));
-    const labels = (unavailable) => open.filter((entry) => entry.unavailable === true === unavailable).map((entry) => CHECK_LABELS[entry.check]).join(", ");
-    const failed = labels(false);
-    const unverified = labels(true);
-    const held = answer.ownerHold === true || answer.state === "blocked";
-    const holdText = "The task is in Review. An earlier block still needs the user to choose Mark done or Requeue; the queue state is unchanged.";
-    if (open.length === 0 && held) return `Task reported complete. ${holdText}`;
-    if (open.length === 0) return input.attention !== void 0 ? "Task reported complete. Pomegr put it in Review for the user's attention; the user marks it done." : "Task reported complete. Pomegr put it in Review; the user marks it done.";
-    const parts = [failed && `these conditions did not pass: ${failed}`, unverified && `Pomegr could not verify: ${unverified} (it had no current evidence, which does not mean the condition failed)`].filter(Boolean);
-    const ciText = open.some((entry) => entry.check === "ci_passed" && entry.unavailable === true) ? " CI needs a finished check result for this checkout's current commit; pending, missing, or mismatched evidence cannot verify it." : "";
-    return `Task reported complete, but ${parts.join("; and ")}.${ciText} ${held ? holdText : "The task now needs the user's review."}`;
-  }));
+  }, async (input, extra) => accepted("complete", input, extra));
   server.registerTool("report_review", {
     title: "Report the Pomegr task review",
     description: "For a review session Pomegr started for a task in Review, report the verdict once after running the repository's checks: pass, or fail with one-line reasons stating met, unmet, or unknown for each repository rule that failed. The verdict changes no task state; only the user decides what happens next. It never edits the board. A denied call changed nothing.",
     inputSchema: external_exports.object({
       verdict: external_exports.enum(["pass", "fail"]),
-      reasons: external_exports.array(external_exports.string().trim().min(1).max(200).regex(ONE_LINE, "Use one line of plain text.")).min(1).max(10).optional(),
+      reasons: external_exports.array(external_exports.string().trim().min(1).max(200).regex(ONE_LINE2, "Use one line of plain text.")).min(1).max(10).optional(),
       task_id: optionalTaskId,
       ...hookFields(hookBound)
     }).strict().refine(
@@ -30322,20 +30533,21 @@ function registerTaskTools(server, { resolveSession, post, hookBound = false }) 
         ...input.task_id === void 0 ? {} : { taskId: input.task_id }
       });
     } catch (error51) {
-      return result2(noAnswer(error51) ? TASK_REVIEW_NO_ANSWER_TEXT : REVIEW_REASON_TEXT.unavailable, true);
+      return result2(noAnswer(error51) ? TASK_REVIEW_NO_ANSWER_TEXT : unreachedText(error51, "report_review", REVIEW_REASON_TEXT.unavailable), true);
     }
     if (answer && answer.ok === true) return result2(input.verdict === "pass" ? "Review reported: passed." : `Review reported: failed, with ${input.reasons.length} ${input.reasons.length === 1 ? "reason" : "reasons"}.`, false);
-    const text = answer && answer.ok === false && typeof answer.reason === "string" && Object.hasOwn(REVIEW_REASON_TEXT, answer.reason) ? REVIEW_REASON_TEXT[answer.reason] : REVIEW_REASON_TEXT.unavailable;
+    const refused = answer && answer.ok === false && typeof answer.reason === "string" && Object.hasOwn(REVIEW_REASON_TEXT, answer.reason);
+    const text = !refused ? REVIEW_REASON_TEXT.unavailable : answer.reason === "not_found" && typeof answer.cause === "string" && Object.hasOwn(REVIEW_CAUSE_TEXT, answer.cause) ? REVIEW_CAUSE_TEXT[answer.cause] : REVIEW_REASON_TEXT[answer.reason];
     return result2(text, true);
   });
-  const feature = async (tool, path3, input, extra, body, done) => {
+  const feature = async (tool, path4, input, extra, body, done) => {
     const ref = await resolveSession(input, extra, tool);
     if (typeof ref !== "string" || !ref) return result2(FEATURE_UNBOUND_TEXT, true);
     let answer;
     try {
-      answer = await post(path3, { sessionRef: ref, ...body });
+      answer = await post(path4, { sessionRef: ref, ...body });
     } catch (error51) {
-      return result2(noAnswer(error51) && tool !== "get_feature" ? FEATURE_NO_ANSWER_TEXT : FEATURE_REASON_TEXT.unavailable, true);
+      return result2(noAnswer(error51) && tool !== "get_feature" ? FEATURE_NO_ANSWER_TEXT : unreachedText(error51, tool, FEATURE_REASON_TEXT.unavailable), true);
     }
     if (answer && answer.ok === true) {
       const text2 = done(answer);
@@ -30399,20 +30611,15 @@ function registerTaskTools(server, { resolveSession, post, hookBound = false }) 
   }, async (input, extra) => feature("delete_feature", FEATURE_DELETE_PATH, input, extra, { feature: input.feature }, () => "Feature deleted."));
   server.registerTool("block_task", {
     title: "Report the Pomegr task blocked",
-    description: "Report that you cannot continue the task Pomegr started this session for, or a task assigned to this session, with a short reason the user will read. The task becomes Blocked by agent and holds the queue until the user resolves the hold. The session is bound by the host. The latest report wins until the owner marks the task done; a later completion does not clear the owner-controlled hold. Name task_id only when this session has more than one task. Use reworks to name 1-5 earlier tasks (T-n) or pull requests (#n) this task fixes or redoes, with a cause, only when this session knows it.",
+    description: "Report that you cannot continue the task Pomegr started this session for, or a task assigned to this session, with a short reason the user will read. The call answers at once and changes nothing by itself: Pomegr applies it when it reads this call in this session's own transcript, and a report made before Pomegr linked the session to its task is applied once the link exists. The task becomes Blocked by agent and holds the queue until the user resolves the hold. The latest report wins until the owner marks the task done; a later completion does not clear the owner-controlled hold. A report Pomegr refuses, such as one for a task that is done or not this session's, is written to the task's log for the user. Name task_id only when this session has more than one task. Use reworks to name 1-5 earlier tasks (T-n) or pull requests (#n) this task fixes or redoes, with a cause, only when this session knows it.",
     inputSchema: external_exports.object({
       task_id: optionalTaskId,
       reworks: optionalReworks,
-      reason: external_exports.string().trim().min(1).max(200).regex(ONE_LINE, "Use one line of plain text.").describe("Why the task cannot continue, in one line of at most 200 characters. No secrets, commands, or output."),
+      reason: external_exports.string().trim().min(1).max(200).regex(ONE_LINE2, "Use one line of plain text.").describe("Why the task cannot continue, in one line of at most 200 characters. No secrets, commands, or output."),
       ...hookFields(hookBound)
     }).strict(),
     annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false }
-  }, async (input, extra) => report(
-    TASK_BLOCK_PATH,
-    await resolveSession(input, extra, "block_task"),
-    { ...input.task_id === void 0 ? {} : { taskId: input.task_id }, reason: input.reason, ...input.reworks === void 0 ? {} : { reworks: input.reworks } },
-    (answer) => answer.state === "blocked" ? "Task reported as blocked. The user will resolve it." : null
-  ));
+  }, async (input, extra) => accepted("block", input, extra));
 }
 
 // plugins/claude-code/mcp/server.mjs
@@ -30448,7 +30655,7 @@ function rejected(text) {
 }
 function buildPomegrMcpServer(options = {}) {
   const server = new McpServer(
-    { name: "pomegr", version: "0.9.19" },
+    { name: "pomegr", version: "0.9.20" },
     { instructions: "Follow .pomegr/signals.md when present. Assign a concise native session title through rename_session after the work is clear, report bounded project-specific transitions and session progress, and clear resolved state when no replacement applies. " + AGENT_QUERY_INSTRUCTIONS + " " + TASK_TOOL_INSTRUCTIONS }
   );
   server.registerTool("report_agent_signal", {
@@ -30527,13 +30734,32 @@ function buildPomegrMcpServer(options = {}) {
     dataRoot: options.dataRoot ?? defaultAgentQueryDataRoot()
   });
   const currentSessionRef = Object.hasOwn(options, "currentSessionRef") ? options.currentSessionRef : resolveCurrentSessionRef(options.environment ?? process.env);
-  registerAgentQueryTools(server, { query, currentSessionRef });
   const taskDataRoot = options.dataRoot ?? defaultAgentQueryDataRoot();
-  const readBindingToken = options.readBindingToken ?? (async () => (await readAgentQueryDescriptor({ dataRoot: taskDataRoot }))?.token ?? null);
+  const readBindingToken = options.readBindingToken ?? (async () => (await awaitAgentQueryDescriptor({ dataRoot: taskDataRoot }))?.descriptor?.token ?? null);
   const now = options.now ?? Date.now;
+  const sentArguments = /* @__PURE__ */ new WeakMap();
+  const validateToolInput = server.validateToolInput.bind(server);
+  server.validateToolInput = async (tool, args, name) => {
+    const parsed = await validateToolInput(tool, args, name);
+    if (parsed !== null && typeof parsed === "object") sentArguments.set(parsed, args ?? {});
+    return parsed;
+  };
+  const host = options.host ?? process.ppid;
+  const takeHandoff = (input, extra, tool) => sentArguments.has(input) ? takeTaskCallHandoff({
+    dataRoot: taskDataRoot,
+    toolUseId: extra?.mcpReq?._meta?.["claudecode/toolUseId"],
+    tool,
+    host,
+    input: sentArguments.get(input),
+    readToken: readBindingToken,
+    now,
+    ...options.handoffWaitMs === void 0 ? {} : { waitMs: options.handoffWaitMs }
+  }) : null;
+  registerAgentQueryTools(server, { query, currentSessionRef, resolveCurrentSession: takeHandoff });
   registerTaskTools(server, {
-    resolveSession: async (input, _extra, tool) => {
+    resolveSession: async (input, extra, tool) => {
       const ref = input?.session_ref;
+      if (ref === void 0 && input?.session_proof === void 0) return takeHandoff(input, extra, tool);
       if (typeof ref !== "string" || !HOOK_SESSION_REF.test(ref) || typeof input.session_proof !== "string") return null;
       try {
         const token = await readBindingToken();

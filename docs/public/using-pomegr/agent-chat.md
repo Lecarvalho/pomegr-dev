@@ -15,33 +15,32 @@ Aril records links when the evidence shows that one task or pull request fixes e
 Aril has one switch, **On** or **Off**, at the top of the **Aril** section of Settings. Aril is On when you first use Pomegr. While it is Off there is no Aril at all: no chat panel, no **Aril** button, and no message box on Home, and Aril takes no action of its own (see [Turn Aril on or off](#turn-aril-on-or-off)).
 
 Apart from those links and the memory updates described below, Aril changes nothing by
-itself: it proposes, and you apply. A later version will add agreements, in which you settle with
-Aril what it may do without asking, and a switch for them.
+itself: it proposes, and you apply. The exception is an agreement you settle with Aril in the
+**Aril** section of Settings. In your words, it says which actions Aril may take without asking,
+each **Allowed** or **Never**. Aril takes them only while the **Autonomy** switch is on.
+Autonomy starts Off, and only you turn it on.
 
 ## Before you start
 
 - **Use the desktop app or a paired device.** The **Aril** button shows in the Pomegr
   desktop app and on a phone you paired with it (see
   [Phone access](phone-access.md)), while Aril is On. A browser on the same computer has no chat.
-- **Install the coding tool and sign in.** A message runs Claude Code or Codex on your
-  computer, signed in as you, so it uses your own subscription allowance. Pomegr reads
-  and stores no credential. Without the tool, the panel says that it is not installed on
-  this computer.
-- **Keep the coding tool current.** The chat needs the native launch options provided by current Claude Code and Codex versions.
+- **Choose a billing route.** Subscription runs need the current Claude Code or Codex tool installed and signed in.
+  Direct API runs need a provider API key and budget, but do not need the CLI.
+  Subscription fallback also needs the installed, signed-in tool.
 - **Have a repository.** Aril works on one repository's board. Pomegr lists a repository
   once it observed a session there.
 
-> **Note:** Each message starts one read-only run of the coding tool. So does each
-> proposal you apply or dismiss, for Aril's follow-up. The run can read files and
-> Pomegr's observations. It cannot write a file, run a command that changes something,
-> or use your other tools and plugins.
+> **Note:** Each message starts one read-only provider run. Applying or dismissing a
+> proposal also starts a follow-up run. It can read files and Pomegr's observations.
+> It cannot write files or use your other tools and plugins.
 
 When a task's text was shortened in the board snapshot, Aril can read the whole task on demand with `get_task`. It reads only the selected repository's board, including the task's conditions and attention or block line; it changes nothing.
 
-Aril uses the coding tool's native read permissions. It starts in the selected repository, but permissions may allow reading files elsewhere.
-Pomegr does not add a separate file filter. Aril remains configured without write access, and you apply its board proposals.
-Codex needs a supported Windows sandbox: native MXC, or a provisioned elevated sandbox.
-Some read commands can still be refused by the coding tool's policy. Aril reports missing evidence instead of guessing.
+Subscription runs use the coding tool's native read permissions. The tool starts in the selected repository, but permissions may allow reading files elsewhere.
+Pomegr adds no separate file filter to a subscription run. Aril remains configured without write access, and you apply its board proposals.
+A Codex subscription run needs a supported Windows sandbox: native MXC, or a provisioned elevated sandbox.
+Some read commands can still be refused by the coding tool's policy. Direct API runs use bounded repository reads without a shell. Aril reports missing evidence instead of guessing.
 
 On large boards, Aril keeps task titles first, then details for In progress, Review, Ready, Done, and Backlog.
 Ready follows queue order; recent Done cards come first. If titles alone exceed the limit, each keeps a shortened prefix.
@@ -58,8 +57,7 @@ You can ask what happened while you were away. For these changes, Aril receives 
 2. Choose the repository in the **Repository** menu beside the attach button when Pomegr lists more than one.
 3. Choose the **Model** and the **Effort** beside the send button. The list shows named models, grouped
    by provider. A repository's first message starts on the newest model Pomegr knows and on **Medium**,
-   and later messages start on what the last one used. The coding tool runs with the model and the effort
-   you chose.
+   and later messages start on what the last one used. The selected route uses the model and the effort you chose.
 4. Type your message and press Enter. Shift+Enter starts a new line.
 5. Select **Stop** to end an answer early. The text written so far is kept.
 
@@ -153,6 +151,52 @@ It closes the process after five minutes without a message, when a message needs
 or effort, and when you quit Pomegr; closing the panel does not close it. The time of an answer
 that used a ready process reads "Started 0.1s (warm)". Codex starts only when you send a message.
 
+### Choose how Aril is billed
+
+In the desktop app, open **Settings › Aril › Billing** to choose how each provider
+pays for Aril. **Subscription** uses the signed-in coding tool's plan allowance.
+Either provider can also use **API · metered** with your own provider API key and a monthly
+budget in US dollars. API access and subscription access are separate; see
+[OpenAI authentication](https://learn.chatgpt.com/docs/auth).
+
+Add or replace a provider key in its card. For Claude, use a workspace-scoped Console key; Default workspace is supported. Organization-wide Claude keys are not supported. Pomegr stores each key encrypted on this computer; a
+paired phone cannot view or change it. Enter a nonnegative budget; it saves when you
+leave the field. The default is $0, which permits no API requests. The card shows the
+configured budget for each provider even when subscription billing is selected.
+
+The meter estimates only Pomegr's API requests, not your invoice or remaining credits.
+A request already running can exceed the budget. If the estimate reaches the budget,
+or usage becomes unknown, later runs use the same provider's subscription when it is
+available; otherwise Aril stops for that provider. The desktop
+chat explains the current route and offers a link back to Billing. If the key is missing, add one or manually choose Subscription; Aril does not fall back automatically. Received HTTP errors, including rate-limit and service errors, record no spend and allow a later attempt without changing your key. A dropped connection or missing usage can still leave the cost unknown. Unknown usage continues to block API requests across month boundaries, and changing the budget does not clear it. After reviewing unknown usage in the provider account, save your key again, even unchanged, to clear the earlier usage block while preserving recorded spend, the budget, and the unknown history. This is your acknowledgment, not a provider-confirmed cost adjustment; the estimate can omit earlier unknown charges. A request still running is not cleared. A known estimate starts a new month at zero. API runs for answers, follow-ups, task writing, and
+conversation summaries all count toward the estimate.
+
+Eligible Claude Max plans include monthly API credits for a linked Console
+organization, separate from the Claude Code allowance. Other purchased credits or
+auto-reload may also pay for API use. Review your balance and billing settings in the
+Claude Console. Eligible ChatGPT Pro or Business plans can link an API organization for credits
+that cover Responses API requests. They do not increase signed-in Codex limits, and API-key
+Codex CLI use is excluded. Check eligibility and balance in your account; see
+[OpenAI API credits](https://developers.openai.com/api/docs/guides/chatgpt-api-credits).
+Codex API requests use models with known rates; an unsupported model is refused before a request.
+
+### Optional beta message threads
+
+Claude's **API · metered** panel has a separate **Message threads** switch with a **Beta** label. It defaults to Off.
+Selecting API billing does not enable it. The option never applies to Claude Code CLI runs or Codex.
+When enabled but API is not the active route, the setting shows **Not in use**.
+
+Threads can reduce repeated uploads during tool follow-ups within one reply. They do not change pricing or automatically enable prompt caching.
+Pomegr keeps the complete replay data only for that active run. Later messages still use your local conversation.
+If a thread expires or cannot continue, Pomegr uses ordinary Messages requests.
+A recognized thread rejection permits one fallback request, with a fresh budget check and separate accounting.
+
+Anthropic holds the conversation, system prompt, and tools in encrypted memory. The thread expires after five idle minutes.
+Anthropic deletes it within one hour of last use; Pomegr cannot request earlier deletion.
+Turning the option Off, deleting local messages, or closing Pomegr does not delete that remote copy.
+Threads are not eligible for zero data retention or HIPAA use.
+These beta rules were checked on 2026-11-05; see [Anthropic's message thread documentation](https://platform.claude.com/docs/en/build-with-claude/message-threads).
+
 ### Let Jev choose a lower effort (optional)
 
 Replies like "thanks" or a yes or no do not need much thinking. If you have a Jev key, enter it
@@ -241,8 +285,8 @@ session cannot start a second one.
 - A start from the chat does not use the queue and changes nothing in it.
 - On a paired phone, the proposal has no **Start session**. Apply it in the desktop app,
   or open the task on the phone and select **Start session** there.
-- To start in a separate worktree while the repository has uncommitted changes, use the
-  task window.
+- Pomegr picks the folder of the start, as for every start (see
+  [Where a task starts](tasks-start-gates.md#where-a-task-starts)).
 
 ## Turn the queue on or off from the chat
 
@@ -309,9 +353,9 @@ The first thing in the **Aril** section of Settings is one switch.
 
 - **Aril is On when you first use Pomegr.** Only you turn it off and on again. Aril never turns itself on, and it is Off again only when you turn it off. A restart keeps what you chose. If Pomegr cannot read the file that holds your choice, it treats Aril as Off, because that file may hold your Off.
 - **Off means no Aril at all.** It takes effect at once, in the desktop app and on a paired phone. The chat panel, the **Aril** button, and the expanded Aril page are gone, and Home has no message box and no suggestions: the rest of Home is as it was. A link to the chat opens Home instead. Nothing is drawn before Pomegr knows whether Aril is On, so the chat never shows up and then goes away.
-- **What Aril was doing stops.** An answer that Aril was writing is stopped, as if you had selected **Stop**, and it shows as stopped. Pomegr starts no run of the coding tool for Aril, and it refuses a message, a proposal's **Apply changes** or **Dismiss**, and an image for Aril while Aril is Off. A session that is already running goes on.
+- **What Aril was doing stops.** An answer that Aril was writing is stopped, as if you had selected **Stop**, and it shows as stopped. Pomegr starts no provider run for Aril, and it refuses a message, a proposal's **Apply changes** or **Dismiss**, and an image for Aril while Aril is Off. A session that is already running goes on.
 - **Your conversations are kept.** Turning Aril off deletes nothing. When you turn it on again, the conversations are there as you left them. Aril saves nothing to memory while it is Off.
-- **Settings turns read only.** Everything under the switch in **Settings**, under **Aril**, is gray and read only while Aril is Off: your memory and each repository's, the conversation space and its limit, and the effort routing. Pomegr refuses those changes too, and any change to Aril's settings, on the computer and from a paired phone. A notice says so. Turn Aril on to change them. Pomegr still flushes a conversation that passes your limit, because that is housekeeping on your own files, not something Aril does.
+- **Settings turns read only.** Everything under the switch in **Settings**, under **Aril**, is gray and read only while Aril is Off: your memory and each repository's, the conversation space and its limit, billing, and the effort routing. Pomegr refuses those changes too, and any change to Aril's settings, on the computer and from a paired phone. A notice says so. Turn Aril on to change them. Pomegr still flushes a conversation that passes your limit, because that is housekeeping on your own files, not something Aril does.
 - **A phone** can always turn Aril off. It can also turn Aril on, and change Aril's settings and each repository's memory, only after you allow that in the desktop app. Turn on the small switch under Aril's switch: "A paired phone can always turn Aril off. Let it also turn Aril on and change Aril's repository memory and settings." One switch covers every repository, and a phone never edits your own memory.
 - **If you allowed paired devices before.** Earlier versions had a **Paired devices** switch for each repository. If you turned it on for any repository, Pomegr turns the one switch on for you, once. You can turn it off, and Pomegr does not turn it on again.
 
@@ -359,7 +403,7 @@ Settings and repository memory are sent with each chat prompt to your chosen pro
 - **Sent to the provider.** Each message sends the summary of the older messages, when there is one,
   the newest earlier messages of the repository's conversation (as many as fit in 24,000 characters)
   and the board to the
-  provider you chose, through your own coding tool. The search sends nothing. After an answer, Pomegr may also run your provider once, read-only and told to use no
+  provider you chose, through your signed-in coding tool or, when selected, its direct API. The search sends nothing. After an answer, Pomegr may also run your provider once, read-only and told to use no
   tool, to write or update the summary of a long conversation. It sends only the older messages and the
   earlier summary, and it spends your provider allowance like an answer does. Applying or dismissing a proposal
   sends them once more, with the result of the proposal, for Aril's follow-up. That run
@@ -374,7 +418,7 @@ Settings and repository memory are sent with each chat prompt to your chosen pro
 - **Sent to Jev, only with your key.** If you set a Jev key, each message without an image also sends Jev your message and the last
   2,000 characters of Aril's previous answer, so it can suggest a lower effort. Nothing else goes to Jev.
 - **Not observed.** A chat run leaves no session, so it does not show in **Sessions**.
-  Its usage counts in your account's usage windows. The same holds for a Claude Code process that
+  Subscription usage counts in your account's usage windows; direct API requests are billed to your provider API account. The same holds for a Claude Code process that
   waits for your next message: it holds no message, board, or conversation text until you send.
 - **On a paired device.** The conversation crosses your local network without
   encryption, like the rest of phone access. Anyone who holds a paired phone can read
