@@ -115,6 +115,7 @@ lists its tasks before the usual destinations.
 | **In review** | The agent reported complete. The task window shows each checked condition's result and the agent's attention line, if it gave one. | Pomegr, when it verifies the report. |
 | **Stalled** | The session ended without a report. | Pomegr, once the session's end is established. It leaves Stalled when that session reports or works again. |
 | **Blocked by agent** | The latest report says the agent cannot continue. A later completion changes the task to **In review**. | The agent sets the block; you resolve it. |
+| **Cut off by a restart** | A restart of the computer or of Pomegr ended the task's build or review session before it reported. | Pomegr, when it finds that session's terminal gone after a restart. It clears when the session is resumed or the task moves on. |
 | **Done** | You accepted the task. An agent's report never sets it. | You, with **Mark done** or a move to **Done**. |
 
 A task has no **Running** state. Once a session is linked to a task that has no outcome
@@ -127,6 +128,14 @@ and then taken back.
 failed. Pomegr confirms the end with a second reading about 20 seconds after the first,
 so a session that reads as ended for a moment does not stall its task. If the same
 session reports or works again later, the task leaves **Stalled** by itself.
+
+**Cut off by a restart** names a session that Pomegr started in its terminal and that a
+reboot, a crash, or a restart of Pomegr's terminal ended before it reported. Open the
+session and choose **Continue** to bring it back. When Aril and Autonomy are on and an
+agreement allows **Start** (for a builder) or **Review** (for a reviewer), Pomegr resumes
+the session once by itself, in its own folder, and asks it to check its working tree and
+branch, finish, and report. A session cut off a second time waits for you. Pomegr never
+resumes a session you continued yourself, or one that reported or was sent back since.
 
 ## Read a card
 

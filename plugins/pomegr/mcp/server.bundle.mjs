@@ -30408,16 +30408,13 @@ function registerTaskTools(server, { resolveSession, post, hookBound = false, re
   }, async (input, extra) => accepted("complete", input, extra));
   server.registerTool("report_review", {
     title: "Report the Pomegr task review",
-    description: "For a review session Pomegr started for a task in Review, report the verdict once after running the repository's checks: pass, or fail with one-line reasons stating met, unmet, or unknown for each repository rule that failed. The verdict changes no task state; only the user decides what happens next. It never edits the board. A denied call changed nothing.",
+    description: "For a review session Pomegr started for a task in Review, report the verdict once after running the repository's checks: pass with one line naming what was read and checked (files or areas, tests run), or fail with one-line reasons stating met, unmet, or unknown for each repository rule that failed. The verdict changes no task state; only the user decides what happens next. It never edits the board. A denied call changed nothing.",
     inputSchema: external_exports.object({
       verdict: external_exports.enum(["pass", "fail"]),
       reasons: external_exports.array(external_exports.string().trim().min(1).max(200).regex(ONE_LINE2, "Use one line of plain text.")).min(1).max(10).optional(),
       task_id: optionalTaskId,
       ...hookFields(hookBound)
-    }).strict().refine(
-      (value) => value.verdict === "fail" ? value.reasons !== void 0 : value.reasons === void 0,
-      "Reasons are required for fail and must be omitted for pass."
-    ),
+    }).strict().refine((value) => value.verdict === "pass" || value.reasons !== void 0, "Reasons are required for fail."),
     annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: true, openWorldHint: false }
   }, async (input, extra) => {
     const ref = await resolveSession(input, extra, "report_review");

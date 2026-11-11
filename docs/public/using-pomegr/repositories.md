@@ -96,6 +96,10 @@ the tree.
 
 Pomegr reads a diff only as its file comes into view. A binary file, a diff too
 large to show, or a file that can hold secrets shows one line instead of a diff.
+An image file (PNG, JPG, GIF, WebP, or SVG) shows the image instead: the new image
+for an added file, **Before** and **After** for a changed one, and the old image for
+a deleted one, each with its size in pixels, its file size, and its type. An image
+above 5 MB shows one line instead.
 For a session that is no longer live, the tree lists the files it touched and the
 files uncommitted at its last check. Each touched file shows what was committed by
 the session's last check, read from Git's own history, never from the folder as it

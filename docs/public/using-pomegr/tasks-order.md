@@ -74,6 +74,12 @@ Pomegr keeps its worktrees inside the repository, in `.pomegr/worktrees/<task ID
 That folder ignores its own contents, so the worktrees do not show as changes in the
 repository.
 
+Each time a task starts or continues in its worktree, Pomegr copies the repository's
+`.claude/settings.local.json` and `.codex/config.toml` into it, so an agent there has the
+same permission rules as in the repository. A copy is made only when Git ignores that file,
+so it is never committed, and it never leaves your computer. When you delete the file in
+the repository, Pomegr removes its copy the next time the task starts or continues.
+
 - When you mark a task done, Pomegr removes the task's worktree and its
   `tasks/<task ID>` branch. To keep them, clear **Remove worktree and branch** in the
   **When done** row of the task. The box is checked for every new task.

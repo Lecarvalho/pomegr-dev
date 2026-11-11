@@ -20,6 +20,10 @@ itself: it proposes, and you apply. The exception is an agreement you settle wit
 each **Allowed** or **Never**. Aril takes them only while the **Autonomy** switch is on.
 Autonomy starts Off, and only you turn it on.
 
+Sessions that Aril starts, reviews, resumes, or ends for you run with your own provider
+account, under that provider's terms. Check that your plan allows unattended use. A provider
+may require its API key for automated use.
+
 ## Before you start
 
 - **Use the desktop app or a paired device.** The **Aril** button shows in the Pomegr
@@ -168,7 +172,7 @@ The meter estimates only Pomegr's API requests, not your invoice or remaining cr
 A request already running can exceed the budget. If the estimate reaches the budget,
 or usage becomes unknown, later runs use the same provider's subscription when it is
 available; otherwise Aril stops for that provider. The desktop
-chat explains the current route and offers a link back to Billing. If the key is missing, add one or manually choose Subscription; Aril does not fall back automatically. Received HTTP errors, including rate-limit and service errors, record no spend and allow a later attempt without changing your key. A dropped connection or missing usage can still leave the cost unknown. Unknown usage continues to block API requests across month boundaries, and changing the budget does not clear it. After reviewing unknown usage in the provider account, save your key again, even unchanged, to clear the earlier usage block while preserving recorded spend, the budget, and the unknown history. This is your acknowledgment, not a provider-confirmed cost adjustment; the estimate can omit earlier unknown charges. A request still running is not cleared. A known estimate starts a new month at zero. API runs for answers, follow-ups, task writing, and
+chat explains the current route and offers a link back to Billing. If the key is missing, add one or manually choose Subscription; Aril does not fall back automatically. Received HTTP errors, including rate-limit and service errors, record no spend and allow a later attempt without changing your key. A dropped connection or missing usage can still leave the cost unknown. A reply you stop, or one that times out, after the request was sent counts at the most it could have cost, so the spend shows around that amount and API use stays available. Unknown usage continues to block API requests across month boundaries, and changing the budget does not clear it. After reviewing unknown usage in the provider account, save your key again, even unchanged, to clear the earlier usage block while preserving recorded spend, the budget, and the unknown history. This is your acknowledgment, not a provider-confirmed cost adjustment; the estimate can omit earlier unknown charges. A request still running is not cleared. A known estimate starts a new month at zero. API runs for answers, follow-ups, task writing, and
 conversation summaries all count toward the estimate.
 
 Eligible Claude Max plans include monthly API credits for a linked Console
@@ -260,6 +264,23 @@ tasks, and deleting a feature cannot be undone. It cannot mark a task done,
 requeue a task, or change the queue's threshold or schedule. Those stay with you, as
 described in [Tasks](tasks.md). Starting a session, turning the queue on or off, and removing
 task worktrees are proposals of their own, described below.
+
+### When Aril writes without being asked
+
+While Aril and **Autonomy** are both on, Pomegr wakes Aril by itself when a task may need a
+decision: a task reaches Review, a review verdict arrives, CI finishes on a task's pull
+request, a builder blocks, a session stalls, or a merge Aril made lands. Events that arrive
+close together are answered in one run. Aril reads the CI results and the sessions, then
+writes a short note in the conversation, under a quiet line that names the events, for
+example "Pomegr woke Aril: CI failed on T-12." It may end with one proposal for you to apply.
+
+- It never applies anything, starts anything, or changes its memory. What your agreements
+  allow still happens through Pomegr, as before.
+- At most four of these runs start in an hour, none while another answer is running, and
+  none while the provider's usage is at the limit that holds new starts.
+- Each one is a provider run like an answer, so it counts in your usage or API budget. While
+  it runs, Aril cannot take a new message: send yours when the answer is in.
+- Turn Autonomy off to stop them. Events that happen while it is off do not wake Aril later.
 
 ## Start a session from the chat
 
@@ -407,7 +428,8 @@ Settings and repository memory are sent with each chat prompt to your chosen pro
   tool, to write or update the summary of a long conversation. It sends only the older messages and the
   earlier summary, and it spends your provider allowance like an answer does. Applying or dismissing a proposal
   sends them once more, with the result of the proposal, for Aril's follow-up. That run
-  uses the provider, model, and effort of the last message. The board includes the text of your
+  uses the provider, model, and effort of the last message. A run Pomegr starts on task events sends
+  the same, with your agreements, the task log, and the events. The board includes the text of your
   tasks. Aril may also send file content and session evidence that it reads. The images
   you sent in the conversation go to the provider too, and the prompt names the folder
   where Pomegr keeps them. Repository settings include the selected merge method, merge mode, and branch deletion choice. Aril also gets the repository's GitHub merge

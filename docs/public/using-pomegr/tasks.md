@@ -133,10 +133,14 @@ Pomegr merges no pull request, sends no task back, and marks no task done unless
 - **Plans.** Markdown files in the repository that name the work to come.
 - **Guards.** How often a failed review may send one task back (3 when unset), and the provider usage percent at
   which Aril starts nothing (the provider's own limit when unset). A task sent back stays linked to its builder's
-  session and returns to **In progress**, and Pomegr continues that session with the review's findings once it has
-  ended; a builder that is still running makes the task wait in **Review**. When the builder cannot be continued, the
-  task shows **Blocked** for you, and **Requeue** starts a new session with the findings. The next review continues
-  the reviewer's session the same way, or starts a new one when it cannot.
+  session and returns to **In progress**. Aril first sorts the review's findings. It tells the reviewer which
+  findings come from this computer and not from the task, and the reviewer decides again. It sends the other findings
+  to the builder in one message, and only that message counts as one send-back. Pomegr delivers each message to the
+  session while it runs, or continues an ended session with it. Aril's chat shows one line for each message, such as
+  **Sent T-12's findings to its builder**. After the builder reports again, Aril asks the same reviewer to check
+  again. When Aril does not sort a review in 10 minutes, Pomegr sends every finding to the builder once the builder's
+  session has ended. When a message cannot be delivered to the builder, the task shows **Blocked** for you, and
+  **Requeue** starts a new session with the findings.
 
 To watch a review you started, open the task's **Terminal** tab in the desktop app. It lists the task's build and
 review sessions, and a review carries a **Review** label.
@@ -176,6 +180,10 @@ or to create an issue from a task, see [GitHub issues](github-issues.md).
 4. When the plugin in that session reports in, the task links to the session. The card
    moves to **In progress** and shows **Open session**.
 
+A Claude Code session that Pomegr starts for a task accepts messages from your other
+Claude Code sessions on this computer. Pomegr sets this for that session only, on its
+command line, and changes none of your settings files.
+
 The agent reports with `complete_task` when the work is complete, or with `block_task`
 when it cannot continue. A completion puts the task in **Review**, never in **Done**.
 A later completion keeps an existing block until you resolve it; see [What agents report](tasks-agents.md#how-a-report-is-checked). A
@@ -207,6 +215,8 @@ You can find a review from its task, whether you or Aril started it:
 
 - **On the card.** A task that has had a review shows a line above its model line:
   **Review running**, **Review passed**, **Review rejected**, or **Review, no verdict**.
+  After a rejected review goes back to a builder, the line reads **Fixing review findings**
+  while a session works on the task, or **Findings to fix** while the task waits to start.
   Select it to open the newest review session.
 - **In the task window.** Under **Sessions**, each review session follows the builder
   session, newest first, with its verdict and its state. After a send-back the earlier

@@ -60,7 +60,7 @@ it; they are the only tools that change something you made or that Pomegr manage
 | `assign_task` | Assigns the session to a task of the board that is not done, so the session can report it. It changes no state and starts nothing. |
 | `unassign_task` | Removes the session's own assignment from a task. |
 | `complete_task` | Reports that a task of the session is complete. The task goes to **Review**. An earlier block still holds the queue until you resolve it. A plain completion takes no input. The optional `attention` field gives the owner one line to look at. Optional `reworks` names earlier work this task fixes, with causes. The answer asks the session to stop its background shells and end its turn, so Pomegr can end it and, after a failed review, continue it with the findings. |
-| `report_review` | Reports pass, or fail with one-line reasons, without changing task state. Only you decide what happens next. |
+| `report_review` | Reports pass with a line naming what was read and checked, or fail with one-line reasons, without changing task state. Only you decide what happens next. |
 | `block_task` | Reports that the agent cannot continue a task, with a short reason. Optional `reworks` names earlier work this task fixes, with causes. |
 | `get_feature` | Reads the title, description, and app version of one feature. |
 | `create_feature` | Creates a feature with a title, and optionally a description and an app version. |

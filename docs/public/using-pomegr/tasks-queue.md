@@ -17,6 +17,10 @@ the queue off, queued tasks start only when you start them. Turning it off never
 a running session. You can also ask Aril to turn the queue on or off: see
 [Turn the queue on or off from the chat](agent-chat.md#turn-the-queue-on-or-off-from-the-chat).
 
+Sessions the queue starts run with your own provider account, under that provider's terms.
+Check that your plan allows unattended use. A provider may require its API key for automated
+use.
+
 The **Ready** column shows what runs when. It reads top to bottom, and a frame marked
 **Parallel** surrounds cards that start together (see
 [Parallel tasks and Runs after](tasks-order.md)). To change the order, see
