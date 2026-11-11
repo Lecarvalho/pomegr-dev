@@ -14,7 +14,10 @@ works only while Pomegr is open. For the main path, see
 The queue is **Off** for every repository until you select **On** in the **Queue**
 switch of the Tasks header. Add a task with **Add to queue** in its task window. With
 the queue off, queued tasks start only when you start them. Turning it off never touches
-a running session. You can also ask Aril to turn the queue on or off: see
+a running session. The switch stops Aril too: even when your agreement allows **Start**,
+Aril starts no **Ready** card while the queue is off, blocked, or paused. Work that has
+already started goes on: Aril still sends work back, reviews, merges, and resumes a session
+a restart cut off. You can also ask Aril to turn the queue on or off: see
 [Turn the queue on or off from the chat](agent-chat.md#turn-the-queue-on-or-off-from-the-chat).
 
 Sessions the queue starts run with your own provider account, under that provider's terms.

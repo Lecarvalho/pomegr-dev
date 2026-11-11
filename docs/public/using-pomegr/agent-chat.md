@@ -17,8 +17,10 @@ Aril has one switch, **On** or **Off**, at the top of the **Aril** section of Se
 Apart from those links and the memory updates described below, Aril changes nothing by
 itself: it proposes, and you apply. The exception is an agreement you settle with Aril in the
 **Aril** section of Settings. In your words, it says which actions Aril may take without asking,
-each **Allowed** or **Never**. Aril takes them only while the **Autonomy** switch is on.
-Autonomy starts Off, and only you turn it on.
+each **Allowed** or **Never**. Aril takes them in a project only while that project's
+**Autonomy** switch is on. Each project has its own switch, so turning it on or off in one
+project changes only that one. Autonomy starts Off in every project, only you turn it on, and
+turning Aril off turns it off in every project.
 
 Sessions that Aril starts, reviews, resumes, or ends for you run with your own provider
 account, under that provider's terms. Check that your plan allows unattended use. A provider
@@ -267,7 +269,7 @@ task worktrees are proposals of their own, described below.
 
 ### When Aril writes without being asked
 
-While Aril and **Autonomy** are both on, Pomegr wakes Aril by itself when a task may need a
+While Aril and a project's **Autonomy** are both on, Pomegr wakes Aril by itself when a task of that project may need a
 decision: a task reaches Review, a review verdict arrives, CI finishes on a task's pull
 request, a builder blocks, a session stalls, or a merge Aril made lands. Events that arrive
 close together are answered in one run. Aril reads the CI results and the sessions, then
@@ -280,7 +282,7 @@ example "Pomegr woke Aril: CI failed on T-12." It may end with one proposal for 
   none while the provider's usage is at the limit that holds new starts.
 - Each one is a provider run like an answer, so it counts in your usage or API budget. While
   it runs, Aril cannot take a new message: send yours when the answer is in.
-- Turn Autonomy off to stop them. Events that happen while it is off do not wake Aril later.
+- Turn the project's Autonomy off to stop them there. Events that happen while it is off do not wake Aril later.
 
 ## Start a session from the chat
 

@@ -131,7 +131,7 @@ session reports or works again later, the task leaves **Stalled** by itself.
 
 **Cut off by a restart** names a session that Pomegr started in its terminal and that a
 reboot, a crash, or a restart of Pomegr's terminal ended before it reported. Open the
-session and choose **Continue** to bring it back. When Aril and Autonomy are on and an
+session and choose **Continue** to bring it back. When Aril and the project's Autonomy are on and an
 agreement allows **Start** (for a builder) or **Review** (for a reviewer), Pomegr resumes
 the session once by itself, in its own folder, and asks it to check its working tree and
 branch, finish, and report. A session cut off a second time waits for you. Pomegr never

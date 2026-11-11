@@ -67,7 +67,7 @@ it; they are the only tools that change something you made or that Pomegr manage
 | `update_feature` | Changes the title, description, or app version of a feature. |
 | `delete_feature` | Deletes a feature that has no task. |
 
-`report_review` works only in a review session Pomegr started for a task. It needs plugin 0.9.15 or later.
+`report_review` works only in a review session Pomegr started for a task. It needs plugin 0.9.15 or later. A pass carries its line of what was read and checked from plugin 0.9.21; earlier plugins refuse a reason on a pass.
 
 When `report_review` is refused, the answer says why and what to do. Plugin 0.9.20 or later shows these answers:
 

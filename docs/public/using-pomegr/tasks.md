@@ -124,8 +124,8 @@ Pomegr merges no pull request, sends no task back, and marks no task done unless
 - **Merge method.** The repository default, unless you choose **Squash**, **Merge commit**, or **Rebase**.
   If the repository allows several methods, choose one.
 - **Merge mode.** **Merge when green** merges once the review passed and the task's Complete when checks
-  hold, with any CI green. **Auto-merge when green** asks GitHub to merge through the repository's auto-merge or merge queue, when its rules allow. The repository must allow
-  auto-merge.
+  hold, with any CI green. When the repository's rules block the merge, such as a required approval, it does not try and reports the refusal. **Auto-merge when green** instead waits for the repository's own rules, such as a required approval, and merges once they allow, or adds the pull request to the repository's merge queue.
+  Pomegr merges only the commit that was reviewed. It does not turn on GitHub's auto-merge, which would merge a later push with no review.
 - **Delete branch after merge.** **Repository default** leaves it to GitHub's own setting. **Delete** deletes the
   task's branch after its pull request is merged, never the default branch or a fork's branch. **Keep** deletes
   nothing.
@@ -141,6 +141,9 @@ Pomegr merges no pull request, sends no task back, and marks no task done unless
   again. When Aril does not sort a review in 10 minutes, Pomegr sends every finding to the builder once the builder's
   session has ended. When a message cannot be delivered to the builder, the task shows **Blocked** for you, and
   **Requeue** starts a new session with the findings.
+  When the same cause of such findings comes back in a project, such as a dependency that task worktrees lack, Aril
+  has Pomegr write one task that proposes the fix on that project's board, with the evidence of each time, where an
+  agreement allows **Write tasks**. A later time adds its evidence to that task instead of a second one.
 
 To watch a review you started, open the task's **Terminal** tab in the desktop app. It lists the task's build and
 review sessions, and a review carries a **Review** label.

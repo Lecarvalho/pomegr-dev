@@ -172,8 +172,7 @@ image. To remove an image, delete it like a character, with **Backspace** or
   text means at each place. After that you cannot add or remove an image until you
   select **Requeue task**.
 - Deleting a task deletes its images.
-- A card, the Search bar, and a session's Task tab show `[image]` where the text holds
-  an image.
+- A card and the Search bar show `[image]` where the text holds an image.
 
 Images stay on this computer, in the same private store as the task text. Creating a
 GitHub issue from a task sends the text only, with `[image]` in place of each image.
